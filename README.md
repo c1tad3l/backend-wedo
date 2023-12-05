@@ -3,5 +3,5 @@
 
 Пакеты для изучения:
 
-github.com/gin-gonic/gin
+github.com/gin-gonic/gin<br>
 github.com/jmoiron/sqlx
