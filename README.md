@@ -4,4 +4,5 @@
 Пакеты для изучения:
 
 github.com/gin-gonic/gin<br>
-github.com/jmoiron/sqlx
+github.com/go-gorm/gorm<br>
+github.com/spf13/viper
