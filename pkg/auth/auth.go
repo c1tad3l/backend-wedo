@@ -3,79 +3,47 @@ package auth
 import (
 	"github.com/c1tad3l/backend-wedo/initializers"
 	"github.com/c1tad3l/backend-wedo/pkg/models/users"
+	"github.com/c1tad3l/backend-wedo/pkg/reqBodyData"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
-	"os"
 	"time"
 )
 
 func CreateUser(c *gin.Context) {
 
-	/// посылаемые запросом данные(body)
-	var usersVals struct {
-		Id                    int
-		Name                  string
-		LastName              string
-		Surname               string
-		Phone                 string
-		Email                 string
-		EmailVerification     bool
-		PassportDate          string
-		PassportSeries        string
-		PassportNumber        string
-		PassportBy            string
-		CertificateNumber     string
-		CertificateDate       string
-		CertificateSchoolName string
-		AveragePoint          float64
-		IsGeneralEducation    bool
-		IsCitizenship         bool
-		Role                  string
-		EstmtName             string
-		Grade                 string
-		UserId                int
-		FirstName             string
-		FirstLastName         string
-		FirstSurname          string
-		SecondName            string
-		SecondLastName        string
-		SecondSurname         string
-	}
-
-	c.Bind(&usersVals)
-
+	c.Bind(&reqBodyData.UsersVals)
 	user := users.User{
-		Name:                  usersVals.Name,
-		LastName:              usersVals.LastName,
-		Surname:               usersVals.Surname,
-		Phone:                 usersVals.Phone,
-		Email:                 usersVals.Email,
-		EmailVerification:     usersVals.EmailVerification,
-		PassportDate:          usersVals.PassportDate,
-		PassportSeries:        usersVals.PassportSeries,
-		PassportNumber:        usersVals.PassportNumber,
-		PassportBy:            usersVals.PassportBy,
-		CertificateNumber:     usersVals.CertificateNumber,
-		CertificateDate:       usersVals.CertificateDate,
-		CertificateSchoolName: usersVals.CertificateSchoolName,
-		AveragePoint:          usersVals.AveragePoint,
-		IsGeneralEducation:    usersVals.IsGeneralEducation,
-		IsCitizenship:         usersVals.IsCitizenship,
-		Role:                  usersVals.Role,
+		Name:                  reqBodyData.UsersVals.Name,
+		LastName:              reqBodyData.UsersVals.LastName,
+		Surname:               reqBodyData.UsersVals.Surname,
+		Phone:                 reqBodyData.UsersVals.Phone,
+		Email:                 reqBodyData.UsersVals.Email,
+		EmailVerification:     reqBodyData.UsersVals.EmailVerification,
+		PassportDate:          reqBodyData.UsersVals.PassportDate,
+		PassportSeries:        reqBodyData.UsersVals.PassportSeries,
+		PassportNumber:        reqBodyData.UsersVals.PassportNumber,
+		PassportBy:            reqBodyData.UsersVals.PassportBy,
+		CertificateNumber:     reqBodyData.UsersVals.CertificateNumber,
+		CertificateDate:       reqBodyData.UsersVals.CertificateDate,
+		CertificateSchoolName: reqBodyData.UsersVals.CertificateSchoolName,
+		AveragePoint:          reqBodyData.UsersVals.AveragePoint,
+		IsGeneralEducation:    reqBodyData.UsersVals.IsGeneralEducation,
+		IsCitizenship:         reqBodyData.UsersVals.IsCitizenship,
+		Role:                  reqBodyData.UsersVals.Role,
 	}
 	estms := users.UserEstimates{
 
-		Name:  usersVals.EstmtName,
-		Grade: usersVals.Grade,
+		Name:  reqBodyData.UsersVals.EstmtName,
+		Grade: reqBodyData.UsersVals.Grade,
 	}
 	parents := users.UserParents{
-		FirstName:      usersVals.FirstName,
-		FirstLastName:  usersVals.FirstLastName,
-		FirstSurname:   usersVals.SecondSurname,
-		SecondName:     usersVals.SecondName,
-		SecondLastName: usersVals.SecondLastName,
-		SecondSurname:  usersVals.SecondSurname,
+		FirstName:      reqBodyData.UsersVals.FirstName,
+		FirstLastName:  reqBodyData.UsersVals.FirstLastName,
+		FirstSurname:   reqBodyData.UsersVals.SecondSurname,
+		SecondName:     reqBodyData.UsersVals.SecondName,
+		SecondLastName: reqBodyData.UsersVals.SecondLastName,
+		SecondSurname:  reqBodyData.UsersVals.SecondSurname,
 	}
 
 	userResult := initializers.DB.Create(&user)
@@ -103,14 +71,11 @@ func CreateUser(c *gin.Context) {
 }
 
 func LoginUser(c *gin.Context) {
-	var logingVals struct {
-		Email            string
-		VerificationCode string
-	}
-	c.Bind(&logingVals)
+
+	c.Bind(&reqBodyData.LogingVals)
 
 	var user users.User
-	initializers.DB.First(&user, "email = ?", logingVals.Email)
+	initializers.DB.First(&user, "email = ?", reqBodyData.LogingVals.Email)
 
 	if user.Id == 0 {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -126,7 +91,7 @@ func LoginUser(c *gin.Context) {
 		"sub": user.Id,
 		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
-	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	tokenString, err := token.SignedString([]byte("we4r5678987654e3w3e456789876yt5rewr5t678765r"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"Ошибка": "не получилось создать токен",
