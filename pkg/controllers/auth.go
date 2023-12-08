@@ -6,11 +6,11 @@ import (
 )
 
 func (h *Handler) signUp(c *gin.Context) {
-	auth.CreateUser()
+	auth.CreateUser(c)
 }
 
 func (h *Handler) signIn(c *gin.Context) {
-	auth.LoginUser()
+	auth.LoginUser(c)
 }
 
 func (h *Handler) verificationEmail(c *gin.Context) {
