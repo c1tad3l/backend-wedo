@@ -4,8 +4,9 @@
 Пакеты для изучения:
 
 github.com/gin-gonic/gin<br>
-https://gorm.io/index.html
 
+https://gorm.io/index.html
+github.com/spf13/viper
 <h1>чтобы запустить сервер<h1> 
 <h2 style="background: white; color: black; padding:1rem">
 go run cmd/main.go

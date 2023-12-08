@@ -13,6 +13,7 @@ func init() {
 func main() {
 	handlers := new(controllers.Handler)
 	srv := new(server.Server)
+
 	if err := srv.Run("8000", handlers.InitRoutes()); err != nil {
 		log.Fatalln("Error start server: " + err.Error())
 	}
