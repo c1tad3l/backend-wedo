@@ -6,14 +6,16 @@ import (
 	"testing"
 )
 
-func testsend(t *testing.T) {
-
+func TestGmailSender_SendEmail(t *testing.T) {
 	if testing.Short() {
 		t.Skip()
 	}
 
 	info, err := config.LoadConfig()
 	require.NoError(t, err)
+	t.Errorf(
+		"For", info,
+	)
 
 	sender := NewGmailSender(info.EmailSenderName, info.EmailSenderAddress, info.EmailSenderPassword)
 
@@ -21,8 +23,10 @@ func testsend(t *testing.T) {
 	content := `
 	<h1>Hello world</h1>
 	`
-	to := []string{"zloymolodoy88@gmail.com"}
+	to := []string{"fellowgram@gmail.com"}
 
 	err = sender.SendEmail(subject, content, to, nil, nil, nil)
+
 	require.NoError(t, err)
+
 }

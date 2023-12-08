@@ -29,6 +29,7 @@ var UsersVals struct {
 	SecondLastName        string
 	SecondSurname         string
 }
+
 var LogingVals struct {
 	Email            string
 	VerificationCode string
