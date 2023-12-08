@@ -13,7 +13,7 @@ go run cmd/main.go
 
 <h1>Чтобы выполнить миграцию</h1>
 <h2 style="background: white; color: black; padding:1rem">
-go run migrate/migrate.go</h2>
+go run migration/migration.go</h2>
 
 <h1>Запросы</h1>
 <h2 style="background: white; color: black; padding:1rem">/auth/sing-up</h2>
