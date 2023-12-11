@@ -77,11 +77,11 @@ func LoginUser(c *gin.Context) {
 	var user users.User
 	initializers.DB.First(&user, "email = ?", reqBodyData.LogingVals.Email)
 
-	if user.Id == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"Ошибка": "Не правильно введен email или проверочный код",
-		})
-	}
+	//if user.Id == 0 {
+	//	c.JSON(http.StatusBadRequest, gin.H{
+	//		"Ошибка": "Не правильно введен email или проверочный код",
+	//	})
+	//}
 
 	////проверочный код//
 	///
