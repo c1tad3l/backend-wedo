@@ -7,6 +7,9 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.0
 	github.com/google/uuid v1.4.0
 	github.com/spf13/viper v1.18.0
+	github.com/jordan-wright/email v4.0.1-0.20210109023952-943e75fe5223+incompatible
+	github.com/spf13/viper v1.18.0
+	github.com/stretchr/testify v1.8.4
 	gorm.io/driver/postgres v1.5.4
 	gorm.io/gorm v1.25.5
 )
