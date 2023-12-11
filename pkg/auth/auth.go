@@ -1,12 +1,15 @@
 package auth
 
 import (
-	"github.com/c1tad3l/backend-wedo/pkg/initializers"
+	"github.com/c1tad3l/backend-wedo/initializers"
+	sender "github.com/c1tad3l/backend-wedo/pkg/mail"
 	"github.com/c1tad3l/backend-wedo/pkg/models/users"
 	"github.com/c1tad3l/backend-wedo/pkg/reqBodyData"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"net/http"
+	"regexp"
+	"strconv"
 	"time"
 )
 
@@ -72,16 +75,23 @@ func CreateUser(c *gin.Context) {
 
 func LoginUser(c *gin.Context) {
 
-	c.Bind(&reqBodyData.LogingVals)
+	err := c.Bind(&reqBodyData.LogingVals)
+	print(err)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "что то не сошлось)",
+		})
+		return
+	}
 
 	var user users.User
 	initializers.DB.First(&user, "email = ?", reqBodyData.LogingVals.Email)
 
-	if user.Id == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"Ошибка": "Не правильно введен email или проверочный код",
-		})
-	}
+	//if user.Id == 0 {
+	//	c.JSON(http.StatusBadRequest, gin.H{
+	//		"Ошибка": "Не правильно введен email или проверочный код",
+	//	})
+	//}
 
 	////проверочный код//
 	///
@@ -94,7 +104,7 @@ func LoginUser(c *gin.Context) {
 	tokenString, err := token.SignedString([]byte("we4r5678987654e3w3e456789876yt5rewr5t678765r"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Ошибка": "не получилось создать токен",
+			"error": "не получилось создать токен",
 		})
 	}
 	c.SetSameSite(http.SameSiteLaxMode)
@@ -105,7 +115,63 @@ func LoginUser(c *gin.Context) {
 		"token": tokenString,
 	})
 }
+func VerificationMail() {
 
-func VerificationUser() {
+}
 
+func SendEmailCode(c *gin.Context) {
+
+	email := &users.EmailType
+	err := c.BindJSON(&email)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Укажите email пользователя",
+		})
+		return
+	}
+
+	matched, _ := regexp.MatchString(`([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})`, email.Email)
+
+	if !matched {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Неверно указана почта",
+		})
+		return
+	}
+
+	to := []string{email.Email}
+	cc := []string{}
+	bcc := []string{}
+
+	subject := "Отправка кода на подтверждения почты"
+	mailtype := "html"
+	replyToAddress := ""
+
+	body := `
+		<html>
+		<body>
+		<h1>
+			Доброго времени суток
+		</h1><br>
+		<h3>
+			Вот ваш код:
+		</h3>
+		<h2>` + generationCode() + ` </h2><br><br><h5>Код будет активен в течении двух часов.<br>На это сообщение не нужно отвечать.</h5> </body> </html>`
+
+	err = sender.SendToMail(subject, body, mailtype, replyToAddress, to, cc, bcc)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Произошла какая то непредвиденная ошибка",
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"error": false,
+	})
+}
+
+func generationCode() string {
+
+	return strconv.Itoa(1234567890)
 }

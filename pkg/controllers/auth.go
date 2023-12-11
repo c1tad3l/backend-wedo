@@ -14,5 +14,8 @@ func (h *Handler) signIn(c *gin.Context) {
 }
 
 func (h *Handler) verificationEmail(c *gin.Context) {
-	auth.VerificationUser()
+	auth.VerificationMail()
+}
+func (h *Handler) sendEmailCode(c *gin.Context) {
+	auth.SendEmailCode(c)
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/c1tad3l/backend-wedo/pkg/initializers"
+	"github.com/c1tad3l/backend-wedo/initializers"
 	"github.com/c1tad3l/backend-wedo/pkg/models/users"
 )
 

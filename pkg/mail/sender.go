@@ -1,65 +1,60 @@
-package mail
+package sender
 
 import (
-	"fmt"
+	"github.com/c1tad3l/backend-wedo/pkg/config"
 	"net/smtp"
-
-	"github.com/jordan-wright/email"
+	"strings"
 )
 
 const (
 	smtpAuthAddress   = "smtp.gmail.com"
-	smtpServerAddress = "smtp.gmail.com:465"
+	smtpServerAddress = "smtp.gmail.com:25"
 )
 
-type EmailSender interface {
-	SendEmail(
-		subject string,
-		content string,
-		to []string,
-		cc []string,
-		bcc []string,
-		attachFiles []string,
-	) error
-}
+//to := []string{"zloymolodoy88@gmail.com"}
+//cc := []string{}
+//bcc := []string{}
+//
+//subject := "test Golang to sendmail"
+//mailtype := "html"
+//replyToAddress := ""
+//
+//body := `
+//	<html>
+//	<body>
+//	<h3>
+//		Test send to email
+//	</h3>
+//	</body>
+//	</html>`
 
-type GmailSender struct {
-	name              string
-	fromEmailAddress  string
-	fromEmailPassword string
-}
+func SendToMail(subject, body, mailtype, replyToAddress string, to, cc, bcc []string) error {
+	env, _ := config.LoadConfig()
 
-func NewGmailSender(name string, fromEmailAddress string, fromEmailPassword string) EmailSender {
-	return &GmailSender{
-		name:              name,
-		fromEmailAddress:  fromEmailAddress,
-		fromEmailPassword: fromEmailPassword,
-	}
-}
+	hp := strings.Split(smtpServerAddress, ":")
+	auth := smtp.PlainAuth("", env.EmailSenderAddress, env.EmailSenderPassword, hp[0])
+	var contentType string
 
-func (sender *GmailSender) SendEmail(
-	subject string,
-	content string,
-	to []string,
-	cc []string,
-	bcc []string,
-	attachFiles []string,
-) error {
-	e := email.NewEmail()
-	e.From = fmt.Sprintf("%s <%s>", sender.name, sender.fromEmailAddress)
-	e.Subject = subject
-	e.HTML = []byte(content)
-	e.To = to
-	e.Cc = cc
-	e.Bcc = bcc
-
-	for _, f := range attachFiles {
-		_, err := e.AttachFile(f)
-		if err != nil {
-			return fmt.Errorf("failed to attach file %s: %w", f, err)
-		}
+	if mailtype == "html" {
+		contentType = "Content-Type: text/" + mailtype + "; charset=UTF-8"
+	} else {
+		contentType = "Content-Type: text/plain" + "; charset=UTF-8"
 	}
 
-	smtpAuth := smtp.PlainAuth("", sender.fromEmailAddress, sender.fromEmailPassword, smtpAuthAddress)
-	return e.Send(smtpServerAddress, smtpAuth)
+	ccAddress := strings.Join(cc, ";")
+	bccAddress := strings.Join(bcc, ";")
+	toAddress := strings.Join(to, ";")
+	msg := []byte("To: " + toAddress + "\r\nFrom: " + env.EmailSenderAddress + "\r\nSubject: " + subject + "\r\nReply-To: " + replyToAddress + "\r\nCc: " + ccAddress + "\r\nBcc: " + bccAddress + "\r\n" + contentType + "\r\n\r\n" + body)
+
+	sendTo := MergeSlice(to, cc)
+	sendTo = MergeSlice(sendTo, bcc)
+	err := smtp.SendMail(smtpServerAddress, auth, env.EmailSenderAddress, sendTo, msg)
+	return err
+}
+
+func MergeSlice(s1 []string, s2 []string) []string {
+	slice := make([]string, len(s1)+len(s2))
+	copy(slice, s1)
+	copy(slice[len(s1):], s2)
+	return slice
 }
