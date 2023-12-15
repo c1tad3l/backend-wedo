@@ -1,7 +1,6 @@
 package reqBodyData
 
 var UsersVals struct {
-	Id                    int
 	Name                  string
 	LastName              string
 	Surname               string
@@ -21,7 +20,6 @@ var UsersVals struct {
 	Role                  string
 	EstmtName             string
 	Grade                 string
-	UserId                int
 	FirstName             string
 	FirstLastName         string
 	FirstSurname          string
