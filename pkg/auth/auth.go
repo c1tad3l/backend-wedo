@@ -7,6 +7,7 @@ import (
 	"github.com/c1tad3l/backend-wedo/pkg/reqBodyData"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"math/rand"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -126,7 +127,8 @@ func SendEmailCode(c *gin.Context) {
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Укажите email пользователя",
+			"error":  true,
+			"result": "Укажите email пользователя",
 		})
 		return
 	}
@@ -135,7 +137,8 @@ func SendEmailCode(c *gin.Context) {
 
 	if !matched {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Неверно указана почта",
+			"error":  true,
+			"result": "Неверно указана почта",
 		})
 		return
 	}
@@ -152,17 +155,18 @@ func SendEmailCode(c *gin.Context) {
 		<html>
 		<body>
 		<h1>
-			Доброго времени суток
+			Приветствуем!
 		</h1><br>
 		<h3>
-			Вот ваш код:
+			Код для подтверждения:
 		</h3>
 		<h2>` + generationCode() + ` </h2><br><br><h5>Код будет активен в течении двух часов.<br>На это сообщение не нужно отвечать.</h5> </body> </html>`
 
 	err = sender.SendToMail(subject, body, mailtype, replyToAddress, to, cc, bcc)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Произошла какая то непредвиденная ошибка",
+			"error":  true,
+			"result": "Произошла какая то непредвиденная ошибка",
 		})
 		return
 	}
@@ -173,5 +177,11 @@ func SendEmailCode(c *gin.Context) {
 
 func generationCode() string {
 
-	return strconv.Itoa(1234567890)
+	var randomCode = ""
+	for i := 0; i < 5; i++ {
+		res := rand.Intn(36)
+		randomCode = randomCode + strconv.Itoa(int(res))
+	}
+
+	return randomCode
 }
