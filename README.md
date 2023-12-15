@@ -29,6 +29,7 @@ type params = {
 ```
 
 <h2 style="background: white; color: black; padding:1rem">/auth/sendCode</h2>
+
 ```typescript
 type params = {
     email: string
