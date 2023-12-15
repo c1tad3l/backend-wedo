@@ -2,9 +2,9 @@ package main
 
 import (
 	server "github.com/c1tad3l/backend-wedo"
+	"github.com/c1tad3l/backend-wedo/initializers"
 	"github.com/c1tad3l/backend-wedo/pkg/config"
 	"github.com/c1tad3l/backend-wedo/pkg/controllers"
-	"github.com/c1tad3l/backend-wedo/pkg/initializers"
 	"log"
 )
 
