@@ -11,9 +11,7 @@ var DB *gorm.DB
 
 func ConnectDb() {
 	var err error
-
 	env, _ := config.LoadConfig()
-
 	dsn := env.DatabaseUrl
 	DB, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
