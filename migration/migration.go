@@ -13,5 +13,6 @@ func main() {
 	initializers.DB.AutoMigrate(&users.UserEstimates{})
 	initializers.DB.AutoMigrate(&users.User{})
 	initializers.DB.AutoMigrate(&users.UserParents{})
+	initializers.DB.AutoMigrate(&users.Email{})
 
 }
