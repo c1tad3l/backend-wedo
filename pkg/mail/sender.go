@@ -1,4 +1,4 @@
-package mail
+package sender
 
 import (
 	"github.com/c1tad3l/backend-wedo/pkg/config"
