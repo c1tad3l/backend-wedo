@@ -17,39 +17,46 @@ import (
 )
 
 func CreateUser(c *gin.Context) {
+	uservals := reqBodyData.UsersVals
+	err := c.BindJSON(&uservals)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"Ошибка": "Не введены данные",
+		})
+		return
+	}
 
-	c.Bind(&reqBodyData.UsersVals)
 	user := users.User{
-		Name:                  reqBodyData.UsersVals.Name,
-		LastName:              reqBodyData.UsersVals.LastName,
-		Surname:               reqBodyData.UsersVals.Surname,
-		Phone:                 reqBodyData.UsersVals.Phone,
-		Email:                 reqBodyData.UsersVals.Email,
-		EmailVerification:     reqBodyData.UsersVals.EmailVerification,
-		PassportDate:          reqBodyData.UsersVals.PassportDate,
-		PassportSeries:        reqBodyData.UsersVals.PassportSeries,
-		PassportNumber:        reqBodyData.UsersVals.PassportNumber,
-		PassportBy:            reqBodyData.UsersVals.PassportBy,
-		CertificateNumber:     reqBodyData.UsersVals.CertificateNumber,
-		CertificateDate:       reqBodyData.UsersVals.CertificateDate,
-		CertificateSchoolName: reqBodyData.UsersVals.CertificateSchoolName,
-		AveragePoint:          reqBodyData.UsersVals.AveragePoint,
-		IsGeneralEducation:    reqBodyData.UsersVals.IsGeneralEducation,
-		IsCitizenship:         reqBodyData.UsersVals.IsCitizenship,
-		Role:                  reqBodyData.UsersVals.Role,
+		Name:                  uservals.Name,
+		LastName:              uservals.LastName,
+		Surname:               uservals.Surname,
+		Phone:                 uservals.Phone,
+		Email:                 uservals.Email,
+		EmailVerification:     uservals.EmailVerification,
+		PassportDate:          uservals.PassportDate,
+		PassportSeries:        uservals.PassportSeries,
+		PassportNumber:        uservals.PassportNumber,
+		PassportBy:            uservals.PassportBy,
+		CertificateNumber:     uservals.CertificateNumber,
+		CertificateDate:       uservals.CertificateDate,
+		CertificateSchoolName: uservals.CertificateSchoolName,
+		AveragePoint:          uservals.AveragePoint,
+		IsGeneralEducation:    uservals.IsGeneralEducation,
+		IsCitizenship:         uservals.IsCitizenship,
+		Role:                  uservals.Role,
 	}
 	estms := users.UserEstimates{
 
-		Name:  reqBodyData.UsersVals.EstmtName,
-		Grade: reqBodyData.UsersVals.Grade,
+		Name:  uservals.EstmtName,
+		Grade: uservals.Grade,
 	}
 	parents := users.UserParents{
-		FirstName:      reqBodyData.UsersVals.FirstName,
-		FirstLastName:  reqBodyData.UsersVals.FirstLastName,
-		FirstSurname:   reqBodyData.UsersVals.SecondSurname,
-		SecondName:     reqBodyData.UsersVals.SecondName,
-		SecondLastName: reqBodyData.UsersVals.SecondLastName,
-		SecondSurname:  reqBodyData.UsersVals.SecondSurname,
+		FirstName:      uservals.FirstName,
+		FirstLastName:  uservals.FirstLastName,
+		FirstSurname:   uservals.SecondSurname,
+		SecondName:     uservals.SecondName,
+		SecondLastName: uservals.SecondLastName,
+		SecondSurname:  uservals.SecondSurname,
 	}
 
 	userResult := initializers.DB.Create(&user)
@@ -60,10 +67,12 @@ func CreateUser(c *gin.Context) {
 		c.Status(400)
 		return
 	}
+
 	if etsmtsResult.Error != nil {
 		c.Status(400)
 		return
 	}
+
 	if parentsResult.Error != nil {
 		c.Status(400)
 		return
@@ -74,36 +83,35 @@ func CreateUser(c *gin.Context) {
 		"estms":   estms,
 		"parents": parents,
 	})
+
 }
 
 func LoginUser(c *gin.Context) {
-
-	err := c.Bind(&reqBodyData.LogingVals)
-	print(err)
+	loginVals := reqBodyData.LogingVals
+	err := c.Bind(&loginVals)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "что то не сошлось)",
+			"Ошибка": "Не ввден email или пароль",
 		})
 		return
 	}
-
 	var user users.User
-	initializers.DB.First(&user, "email = ?", reqBodyData.LogingVals.Email)
+	mailCheck := initializers.DB.First(&user, "email = ?", loginVals.Email).Error
 
-	//if user.Id == 0 {
-	//	c.JSON(http.StatusBadRequest, gin.H{
-	//		"Ошибка": "Не правильно введен email или проверочный код",
-	//	})
-	//}
-
+	if errors.Is(mailCheck, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"Ошибка": "Не правильно введен email или проверочный код",
+		})
+		return
+	}
 	////проверочный код//
 	///
-
 	//jwt token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.Id,
 		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
 	})
+
 	tokenString, err := token.SignedString([]byte("we4r5678987654e3w3e456789876yt5rewr5t678765r"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -117,6 +125,7 @@ func LoginUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"token": tokenString,
 	})
+
 }
 func VerificationMail(c *gin.Context) {
 

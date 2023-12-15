@@ -12,6 +12,7 @@ func init() {
 	initializers.ConnectDb()
 }
 func main() {
+	info, _ := config.LoadConfig()
 	handlers := new(controllers.Handler)
 	srv := new(server.Server)
 
