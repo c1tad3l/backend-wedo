@@ -160,7 +160,7 @@ func VerificationMail(c *gin.Context) {
 		return
 	}
 
-	initializers.DB.Exec("DELETE FROM emails WHERE code=" + "'" + data.Code + "'")
+	initializers.DB.Exec("DELETE FROM emails WHERE code=" + "'" + data.Code + "'" + "AND email=" + "'" + data.Email + "'")
 
 	c.JSON(http.StatusOK, gin.H{
 		"error":  false,
@@ -222,18 +222,34 @@ func SendEmailCode(c *gin.Context) {
 		return
 	}
 
-	answer := initializers.DB.Create(&users.Email{Email: email.Email, Code: code})
+	initializers.DB.Create(&users.Email{Email: email.Email, Code: code})
 
-	print(answer.RowsAffected)
+	//pool := pond.New(9999, 9999)
+
+	//pool.Submit(deleteCodeAfterTime())
+
 	c.JSON(http.StatusOK, gin.H{
 		"error": false,
 	})
+	return
+}
+
+func deleteCodeAfterTime(code string, email string) {
+	time.Sleep(30 * time.Second)
+
+	answer := initializers.DB.First(&users.Email{Email: email, Code: code})
+
+	if errors.Is(answer.Error, gorm.ErrRecordNotFound) {
+		return
+	} else {
+		initializers.DB.Exec("DELETE FROM emails WHERE code=" + "'" + code + "'" + "AND email=" + "'" + email + "'")
+	}
 }
 
 func generationCode() string {
 
 	var randomCode = ""
-	for i := 0; i < 10; i++ {
+	for i := 0; i < 3; i++ {
 		res := rand.Intn(36)
 		randomCode = randomCode + strconv.Itoa(int(res))
 	}
