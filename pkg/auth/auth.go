@@ -160,7 +160,7 @@ func VerificationMail(c *gin.Context) {
 		return
 	}
 
-	initializers.DB.Exec("DELETE FROM emails WHERE code=" + "'" + data.Code + "'")
+	initializers.DB.Exec("DELETE FROM emails WHERE code=" + "'" + data.Code + "'" + "AND email=" + "'" + data.Email + "'")
 
 	c.JSON(http.StatusOK, gin.H{
 		"error":  false,
@@ -211,7 +211,7 @@ func SendEmailCode(c *gin.Context) {
 			<h3>
 				Код для подтверждения:
 			</h3>
-			<h2>` + code + ` </h2><br><br><h5>Код будет активен в течении двух часов.<br>На это сообщение не нужно отвечать.</h5> </body> </html>`
+			<h2>` + code + ` </h2><br><br><h5>Код будет активен в течении 30 минут.<br>На это сообщение не нужно отвечать.</h5> </body> </html>`
 
 	err = sender.SendToMail(subject, body, mailtype, replyToAddress, to, cc, bcc)
 	if err != nil {
@@ -222,19 +222,34 @@ func SendEmailCode(c *gin.Context) {
 		return
 	}
 
-	answer := initializers.DB.Create(&users.Email{Email: email.Email, Code: code})
+	initializers.DB.Create(&users.Email{Email: email.Email, Code: code})
 
-	print(answer.RowsAffected)
+	go deleteCodeAfterTime(code, email.Email)
+
 	c.JSON(http.StatusOK, gin.H{
 		"error": false,
 	})
+	return
+
+}
+
+func deleteCodeAfterTime(code string, email string) {
+	time.Sleep(30 * time.Minute)
+
+	answer := initializers.DB.First(&users.Email{Email: email, Code: code})
+
+	if errors.Is(answer.Error, gorm.ErrRecordNotFound) {
+		return
+	} else {
+		initializers.DB.Exec("DELETE FROM emails WHERE code=" + "'" + code + "'" + "AND email=" + "'" + email + "'")
+	}
 }
 
 func generationCode() string {
 
 	var randomCode = ""
-	for i := 0; i < 10; i++ {
-		res := rand.Intn(36)
+	for i := 0; i < 4; i++ {
+		res := rand.Intn(9)
 		randomCode = randomCode + strconv.Itoa(int(res))
 	}
 
