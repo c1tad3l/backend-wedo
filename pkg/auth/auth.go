@@ -8,6 +8,7 @@ import (
 	"github.com/c1tad3l/backend-wedo/pkg/reqBodyData"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"math/rand"
 	"net/http"
@@ -17,6 +18,8 @@ import (
 )
 
 func CreateUser(c *gin.Context) {
+	id := uuid.New()
+
 	uservals := reqBodyData.UsersVals
 	err := c.BindJSON(&uservals)
 	if err != nil {
@@ -25,8 +28,8 @@ func CreateUser(c *gin.Context) {
 		})
 		return
 	}
-
 	user := users.User{
+		Id:                    id,
 		Name:                  uservals.Name,
 		LastName:              uservals.LastName,
 		Surname:               uservals.Surname,
@@ -46,17 +49,20 @@ func CreateUser(c *gin.Context) {
 		Role:                  uservals.Role,
 	}
 	estms := users.UserEstimates{
-
-		Name:  uservals.EstmtName,
-		Grade: uservals.Grade,
+		Id:     id,
+		Name:   uservals.EstmtName,
+		Grade:  uservals.Grade,
+		UserId: id,
 	}
 	parents := users.UserParents{
+		Id:             id,
 		FirstName:      uservals.FirstName,
 		FirstLastName:  uservals.FirstLastName,
 		FirstSurname:   uservals.SecondSurname,
 		SecondName:     uservals.SecondName,
 		SecondLastName: uservals.SecondLastName,
 		SecondSurname:  uservals.SecondSurname,
+		UserId:         id,
 	}
 
 	userResult := initializers.DB.Create(&user)
@@ -120,7 +126,7 @@ func LoginUser(c *gin.Context) {
 	}
 	c.SetSameSite(http.SameSiteLaxMode)
 
-	//поменять в будущем
+	//поменять secure parameter в будущем
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{
 		"token": tokenString,
