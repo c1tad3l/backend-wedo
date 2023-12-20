@@ -21,7 +21,7 @@ go run migration/migration.go</h2>
 
 ```typescript
 type  userParams={
-    Name:   string
+    	Name:   string
 	LastName:   string
 	Surname:    string
 	Phone:  string
