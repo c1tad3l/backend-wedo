@@ -1,5 +1,10 @@
 package reqBodyData
 
+import (
+	"math/rand"
+	"time"
+)
+
 var UsersVals struct {
 	Name                  string
 	LastName              string
@@ -29,6 +34,10 @@ var UsersVals struct {
 }
 
 var LogingVals struct {
-	Email            string
-	VerificationCode string
+	Email    string
+	Password string
 }
+
+const Charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+var SeededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
