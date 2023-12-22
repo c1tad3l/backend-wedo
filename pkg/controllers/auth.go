@@ -19,3 +19,7 @@ func (h *Handler) verificationEmail(c *gin.Context) {
 func (h *Handler) sendEmailCode(c *gin.Context) {
 	auth.SendEmailCode(c)
 }
+
+func (h *Handler) resetPassword(c *gin.Context) {
+	auth.ResetPassword(c)
+}

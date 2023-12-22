@@ -2,6 +2,12 @@ package auth
 
 import (
 	"errors"
+	"math/rand"
+	"net/http"
+	"regexp"
+	"strconv"
+	"time"
+
 	"github.com/c1tad3l/backend-wedo/initializers"
 	sender "github.com/c1tad3l/backend-wedo/pkg/mail"
 	"github.com/c1tad3l/backend-wedo/pkg/models/users"
@@ -9,12 +15,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
-	"math/rand"
-	"net/http"
-	"regexp"
-	"strconv"
-	"time"
 )
 
 // Генерирует рандомный пароль
@@ -109,7 +111,7 @@ func LoginUser(c *gin.Context) {
 	err := c.Bind(&loginVals)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Ошибка": "Не ввден email или пароль",
+			"error": "Не ввден email или пароль",
 		})
 		return
 	}
@@ -118,7 +120,7 @@ func LoginUser(c *gin.Context) {
 	mailCheck := initializers.DB.First(&user, "email = ?", loginVals.Email).Error
 	if errors.Is(mailCheck, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Ошибка": "Не правильно введен email",
+			"error": "Не правильно введен email",
 		})
 		return
 	}
@@ -126,7 +128,7 @@ func LoginUser(c *gin.Context) {
 	passwordCheck := initializers.DB.First(&user, "password = ?", loginVals.Password).Error
 	if errors.Is(passwordCheck, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Ошибка": "Не правильно введен Пароль",
+			"error": "Не правильно введен Пароль",
 		})
 		return
 	}
@@ -192,6 +194,55 @@ func VerificationMail(c *gin.Context) {
 		"result": true,
 	})
 	return
+}
+
+func ResetPassword(c *gin.Context) {
+	var user users.User
+	data := reqBodyData.UserPassword
+	err := c.BindJSON(&data)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  true,
+			"result": "Укажите email пользователя",
+		})
+		return
+	}
+
+	matched, _ := regexp.MatchString(`([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})`, data.Email)
+
+	if !matched {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  true,
+			"result": "Неверно указана почта",
+		})
+		return
+	}
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(data.Password), 10)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  true,
+			"result": "error",
+		})
+	}
+	checkEmail := initializers.DB.First(&user, "email = ?", data.Email)
+	if errors.Is(checkEmail.Error, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error":  true,
+			"result": "Не правильно введен email",
+		})
+		return
+	}
+
+	initializers.DB.Model(&user).Updates(users.User{Password: string(hash)})
+	c.JSON(http.StatusOK, gin.H{
+		"error":  false,
+		"result": "Пароль успешно изменён",
+	})
+	c.JSON(200, gin.H{
+		"user": user,
+	})
 }
 
 func SendEmailCode(c *gin.Context) {

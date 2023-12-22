@@ -11,6 +11,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.POST("/sign-in", h.signIn)
 		auth.POST("/verification", h.verificationEmail)
 		auth.POST("/sendCode", h.sendEmailCode)
+		auth.POST("/reset-password", h.resetPassword)
 	}
 
 	return router
@@ -21,6 +22,7 @@ type Auth interface {
 	LoginUser()
 	verificationEmail()
 	sendEmailCode()
+	ResetPassword()
 }
 
 type Handler struct {
