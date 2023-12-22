@@ -17,10 +17,20 @@ import (
 	"time"
 )
 
+// Генерирует рандомный пароль
+func GenerateRandomString(length int) string {
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = reqBodyData.Charset[reqBodyData.SeededRand.Intn(len(reqBodyData.Charset))]
+	}
+	return string(b)
+}
+
 func CreateUser(c *gin.Context) {
 	id := uuid.New()
-
+	randomString := GenerateRandomString(10)
 	uservals := reqBodyData.UsersVals
+
 	err := c.BindJSON(&uservals)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -28,11 +38,13 @@ func CreateUser(c *gin.Context) {
 		})
 		return
 	}
+
 	user := users.User{
 		Id:                    id,
 		Name:                  uservals.Name,
 		LastName:              uservals.LastName,
 		Surname:               uservals.Surname,
+		Password:              randomString,
 		Phone:                 uservals.Phone,
 		Email:                 uservals.Email,
 		EmailVerification:     uservals.EmailVerification,
@@ -102,16 +114,23 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 	var user users.User
-	mailCheck := initializers.DB.First(&user, "email = ?", loginVals.Email).Error
 
+	mailCheck := initializers.DB.First(&user, "email = ?", loginVals.Email).Error
 	if errors.Is(mailCheck, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Ошибка": "Не правильно введен email или проверочный код",
+			"Ошибка": "Не правильно введен email",
 		})
 		return
 	}
-	////проверочный код//
-	///
+
+	passwordCheck := initializers.DB.First(&user, "password = ?", loginVals.Password).Error
+	if errors.Is(passwordCheck, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"Ошибка": "Не правильно введен Пароль",
+		})
+		return
+	}
+
 	//jwt token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.Id,
