@@ -38,6 +38,11 @@ var LogingVals struct {
 	Password string
 }
 
+var UserPassword struct{
+	Email                 string    `json:"email"`
+	Password              string    `json:"password"`
+}
+
 const Charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 var SeededRand *rand.Rand = rand.New(rand.NewSource(time.Now().UnixNano()))
