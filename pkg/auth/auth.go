@@ -209,9 +209,9 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	matched, _ := regexp.MatchString(`([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})`, data.Email)
+	answer := checkingEmailReg(data.Email)
 
-	if !matched {
+	if !answer {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":  true,
 			"result": "Неверно указана почта",
@@ -226,8 +226,8 @@ func ResetPassword(c *gin.Context) {
 			"result": "error",
 		})
 	}
-	checkEmail := initializers.DB.First(&user, "email = ?", data.Email)
-	if errors.Is(checkEmail.Error, gorm.ErrRecordNotFound) {
+	checkEmail := checkingEmailInBD(data.Email)
+	if !checkEmail {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error":  true,
 			"result": "Не правильно введен email",
@@ -258,9 +258,9 @@ func SendEmailCode(c *gin.Context) {
 		return
 	}
 
-	matched, _ := regexp.MatchString(`([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})`, email.Email)
+	answerCheck := checkingEmailReg(email.Email)
 
-	if !matched {
+	if !answerCheck {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":  true,
 			"result": "Неверно указана почта",
@@ -330,4 +330,26 @@ func generationCode() string {
 	}
 
 	return randomCode
+}
+
+func checkingEmailReg(email string) bool {
+
+	matched, _ := regexp.MatchString(`([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})`, email)
+
+	if !matched {
+
+		return false
+	}
+	return true
+}
+
+func checkingEmailInBD(email string) bool {
+	var user users.User
+	answer := initializers.DB.First(&user, "email = ?", email)
+
+	if errors.Is(answer.Error, gorm.ErrRecordNotFound) {
+		return false
+	}
+
+	return true
 }
