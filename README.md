@@ -24,6 +24,7 @@ go run migration/migration.go</h2>
 <h3>Запрос для регистрации пользователей</h3>
 
 <h3>Typescript request </h3>
+
 ```typescript
 type  userParams={
     name:   string
@@ -44,8 +45,9 @@ type  userParams={
 	is_citizenship: boolean
 	role: string
 }
-```
+````
 <h3>GO model</h3>
+
 ```
 type User struct {
 	Id                    uuid.UUID `gorm:"PrimaryKey" json:"id"`
@@ -68,7 +70,7 @@ type User struct {
 	IsCitizenship         bool      `json:"is_citizenship"`
 	Role                  string    `json:"role"`
 }
-```
+````
 <h3>Typescipt request</h3>
 
 ```typescript
@@ -78,6 +80,7 @@ type estmsParams={
 }
 ````
 <h3>GO model</h3>
+
 ```
 type UserEstimates struct {
 	Id     uuid.UUID `gorm:"PrimaryKey" json:"id"`
@@ -85,9 +88,10 @@ type UserEstimates struct {
 	Grade  string    `json:"grade"`
 	UserId uuid.UUID `gorm:"foreignKey:Id" json:"user_id"`
 }
-```
+````
 
 <h3>Typescipt request</h3>
+
 ```typescript
 type parentsParams={
     name :string
@@ -96,6 +100,7 @@ type parentsParams={
 }
 ````
 <h3>GO model</h3>
+
 ```
 type UserParents struct {
 	Id       uuid.UUID `gorm:"PrimaryKey" json:"id"`
@@ -153,6 +158,7 @@ response = {
 
 <h3>400</h3>
 <h4>Пароль не совпал с паролем в базе данных</h2>
+
 ```typescript
 response = {
     error: true,
@@ -162,6 +168,7 @@ response = {
 
 <h3>400</h3>
 <h4>Поле email или поле password оказались пустыми</h2>
+
 ```typescript
 response = {
     error:  true,
@@ -171,6 +178,7 @@ response = {
 
 <h3>404</h3>
 <h4>Не удалось найти email в базе данных</h2>
+
 ```typescript
 response = {
     error: true,
@@ -180,6 +188,7 @@ response = {
 
 <h3>500</h3>
 <h4>По каким то причинам сервер не смог сгенирировать токен защиты</h2>
+
 ```typescript
 response = {
     "error": true,
@@ -206,6 +215,7 @@ type params = {
 }
 ```
 <h3>GO model</h3>
+
 ```
 var Verification struct {
 	Email string
@@ -227,6 +237,7 @@ response = {
 
 <h3>400</h3>
 <h4>Email не был отправлен вообще, или же оказалось пустым</h2>
+
 ```typescript
 response = {
     error:  true,
@@ -236,6 +247,7 @@ response = {
 
 <h3>400</h3>
 <h4>Почта не прошла валидацию</h2>
+
 ```typescript
 response = {
     error:  true,
@@ -244,6 +256,7 @@ response = {
 ```
 <h3>404</h3>
 <h4>Почта или код не существует в базе данных ( можно доработать и сделать проверку чего конкретно нет )</h2>
+
 ```typescript
 response = {
     error:  true,
@@ -257,12 +270,14 @@ response = {
 <h3>Запрос для отправки на почту код подтверждения</h3>
 
 <h3>Typescript request</h3>
+
 ```typescript
 type params = {
     email: string
 }
 ```
 <h3>GO model</h3>
+
 ```
 var EmailType struct {
 Email string `json:"email"`
@@ -272,6 +287,7 @@ Email string `json:"email"`
 <h2>Варианты ответов:</h2>
 
 <h3>200</h3>
+
 ```typescript
 response = {
 error: false
@@ -280,6 +296,7 @@ error: false
 
 <h3>400</h3>
 <h4>Email не был отправлен вообще, или же оказалось пустым</h2>
+
 ```typescript
 response = {
     error:  true,
@@ -289,6 +306,7 @@ response = {
 
 <h3>400</h3>
 <h4>Почта не прошла валидацию</h2>
+
 ```typescript
 response = {
     error:  true,
@@ -298,6 +316,7 @@ response = {
 
 <h3 id="test">500</h3>
 <h4>По какой то причине произошла ошибки при отправке, тяжело сделать обработчик возможно поможет отправить снова, в будущем может что то придумаем если такое случится.D</h2>
+
 ```typescript
 response = {
     error:  true,
