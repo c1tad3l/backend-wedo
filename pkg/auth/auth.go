@@ -20,15 +20,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// Генерирует рандомный пароль
-func GenerateRandomString(length int) string {
-	b := make([]byte, length)
-	for i := range b {
-		b[i] = reqBodyData.Charset[reqBodyData.SeededRand.Intn(len(reqBodyData.Charset))]
-	}
-	return string(b)
-}
-
 func CreateUser(c *gin.Context) {
 	id := uuid.New()
 	randomString := GenerateRandomString(10)
@@ -48,7 +39,8 @@ func CreateUser(c *gin.Context) {
 	err = c.BindJSON(&uservals)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"Ошибка": "Не введены данные",
+			"error":  true,
+			"result": "Не введены данные",
 		})
 		return
 	}
@@ -81,14 +73,11 @@ func CreateUser(c *gin.Context) {
 		UserId: id,
 	}
 	parents := users.UserParents{
-		Id:             id,
-		FirstName:      uservals.FirstName,
-		FirstLastName:  uservals.FirstLastName,
-		FirstSurname:   uservals.SecondSurname,
-		SecondName:     uservals.SecondName,
-		SecondLastName: uservals.SecondLastName,
-		SecondSurname:  uservals.SecondSurname,
-		UserId:         id,
+		Id:       id,
+		Name:     uservals.Name,
+		LastName: uservals.LastName,
+		Surname:  uservals.Surname,
+		UserId:   id,
 	}
 
 	userResult := initializers.DB.Create(&user)
@@ -123,7 +112,8 @@ func LoginUser(c *gin.Context) {
 	err := c.Bind(&loginVals)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Не ввден email или пароль",
+			"error":  true,
+			"result": "Не введен email или пароль",
 		})
 		return
 	}
@@ -131,8 +121,9 @@ func LoginUser(c *gin.Context) {
 
 	mailCheck := initializers.DB.First(&user, "email = ?", loginVals.Email).Error
 	if errors.Is(mailCheck, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Не правильно введен email",
+		c.JSON(http.StatusNotFound, gin.H{
+			"error":  true,
+			"result": "Не правильно введен email",
 		})
 		return
 	}
@@ -153,8 +144,9 @@ func LoginUser(c *gin.Context) {
 
 	tokenString, err := token.SignedString([]byte("we4r5678987654e3w3e456789876yt5rewr5t678765r"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "не получилось создать токен",
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":  true,
+			"result": "не получилось создать токен",
 		})
 	}
 	c.SetSameSite(http.SameSiteLaxMode)
@@ -162,10 +154,12 @@ func LoginUser(c *gin.Context) {
 	//поменять secure parameter в будущем
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{
+		"error": false,
 		"token": tokenString,
 	})
 
 }
+
 func VerificationMail(c *gin.Context) {
 
 	data := users.Verification
@@ -257,6 +251,8 @@ func ResetPassword(c *gin.Context) {
 	})
 }
 
+// Функция для отправки кода на почту
+
 func SendEmailCode(c *gin.Context) {
 
 	email := &users.EmailType
@@ -321,6 +317,8 @@ func SendEmailCode(c *gin.Context) {
 
 }
 
+// Функции который используется в качестве вспомогательных и обработчики
+
 func deleteCodeAfterTime(code string, email string) {
 	time.Sleep(30 * time.Minute)
 
@@ -364,4 +362,12 @@ func checkingEmailInBD(email string) bool {
 	}
 
 	return true
+}
+
+func GenerateRandomString(length int) string {
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = reqBodyData.Charset[reqBodyData.SeededRand.Intn(len(reqBodyData.Charset))]
+	}
+	return string(b)
 }

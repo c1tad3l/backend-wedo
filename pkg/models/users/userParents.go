@@ -3,12 +3,9 @@ package users
 import "github.com/google/uuid"
 
 type UserParents struct {
-	Id             uuid.UUID `gorm:"PrimaryKey" json:"id"`
-	FirstName      string    `json:"first_name"`
-	FirstLastName  string    `json:"first_last_name"`
-	FirstSurname   string    `json:"first_surname"`
-	SecondName     string    `json:"second_name"`
-	SecondLastName string    `json:"second_last_name"`
-	SecondSurname  string    `json:"second_surname"`
-	UserId         uuid.UUID `gorm:"foreignKey:Id" json:"user_id"`
+	Id       uuid.UUID `gorm:"PrimaryKey" json:"id"`
+	Name     string    `json:"name"`
+	LastName string    `json:"last_name"`
+	Surname  string    `json:"surname"`
+	UserId   uuid.UUID `gorm:"foreignKey:Id" json:"user_id"`
 }

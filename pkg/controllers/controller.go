@@ -1,10 +1,14 @@
 package controllers
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+)
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 
+	router.Use(cors.Default())
 	auth := router.Group("/auth")
 	{
 		auth.POST("/sign-up", h.signUp)
