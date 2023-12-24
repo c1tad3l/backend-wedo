@@ -2,6 +2,7 @@ package auth
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 	"net/http"
 	"regexp"
@@ -22,9 +23,20 @@ import (
 func CreateUser(c *gin.Context) {
 	id := uuid.New()
 	randomString := GenerateRandomString(10)
-	uservals := reqBodyData.UsersVals
 
-	err := c.BindJSON(&uservals)
+	///пароль отобразиться в консоли, так как результат будет уже захеширован (удалить когда он уже будет отправляться на почту)
+	fmt.Println(randomString)
+
+	hash, err := bcrypt.GenerateFromPassword([]byte(randomString), 10)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  true,
+			"result": "Ошибка хеширования",
+		})
+	}
+
+	uservals := reqBodyData.UsersVals
+	err = c.BindJSON(&uservals)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":  true,
@@ -38,7 +50,7 @@ func CreateUser(c *gin.Context) {
 		Name:                  uservals.Name,
 		LastName:              uservals.LastName,
 		Surname:               uservals.Surname,
-		Password:              randomString,
+		Password:              string(hash),
 		Phone:                 uservals.Phone,
 		Email:                 uservals.Email,
 		EmailVerification:     uservals.EmailVerification,
@@ -116,13 +128,12 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
-	passwordCheck := initializers.DB.First(&user, "password = ?", loginVals.Password).Error
-	if errors.Is(passwordCheck, gorm.ErrRecordNotFound) {
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginVals.Password))
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":  true,
-			"result": "Не правильно введен Пароль",
+			"result": "Не правильно введен пароль",
 		})
-		return
 	}
 
 	//jwt token
@@ -151,7 +162,7 @@ func LoginUser(c *gin.Context) {
 
 func VerificationMail(c *gin.Context) {
 
-	data := &users.Verification
+	data := users.Verification
 	err := c.BindJSON(&data)
 
 	if err != nil {
