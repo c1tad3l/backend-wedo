@@ -17,7 +17,7 @@ func (h *Handler) updateParents(c *gin.Context) {
 	entree.UpdateParentsInfo(c)
 
 }
-func (h *Handler) updatePassword(c *gin.Context) {
+func (h *Handler) updatePassport(c *gin.Context) {
 	entree.UpdatePassport(c)
 
 }

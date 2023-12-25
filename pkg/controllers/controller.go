@@ -23,7 +23,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		entree.GET("/", h.getAllEntree)
 		entree.PUT("/update-esmts/:id", h.updateEstmts)
 		entree.PUT("/update-parents/:id", h.updateParents)
-		entree.PUT("/update-passport/:id", h.updatePassword)
+		entree.PUT("/update-passport/:id", h.updatePassport)
 	}
 	return router
 }
