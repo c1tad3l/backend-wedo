@@ -323,3 +323,17 @@ response = {
     result: "Произошла какая то непредвиденная ошибка",
 }
 ```
+<h1>Get</h1>
+<h2>/entree/</h2>
+<p>все данные об абитуриенте</p>
+
+<h1>PUT</h1>
+<h2>entree/update-esmts/:id</h2>
+<p>обновление данных об аттестате </p>
+
+```typescript
+type params={ 
+    esmtName:string,
+    grade:string
+}
+````
