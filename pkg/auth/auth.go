@@ -65,44 +65,28 @@ func CreateUser(c *gin.Context) {
 		IsGeneralEducation:    uservals.IsGeneralEducation,
 		IsCitizenship:         uservals.IsCitizenship,
 		Role:                  uservals.Role,
+		UserParents: []users.UserParents{
+			{Id: id,
+				Name:     uservals.FirstName,
+				LastName: uservals.FirstLastName,
+				Surname:  uservals.FirstSurname,
+			},
+		},
+		UserEstimates: []users.UserEstimates{{
+			Id:    id,
+			Name:  uservals.EstmtName,
+			Grade: uservals.Grade,
+		}},
 	}
-	estms := users.UserEstimates{
-		Id:     id,
-		Name:   uservals.EstmtName,
-		Grade:  uservals.Grade,
-		UserId: id,
-	}
-	parents := users.UserParents{
-		Id:       id,
-		Name:     uservals.Name,
-		LastName: uservals.LastName,
-		Surname:  uservals.Surname,
-		UserId:   id,
-	}
-
 	userResult := initializers.DB.Create(&user)
-	etsmtsResult := initializers.DB.Create(&estms)
-	parentsResult := initializers.DB.Create(&parents)
 
 	if userResult.Error != nil {
 		c.Status(400)
 		return
 	}
 
-	if etsmtsResult.Error != nil {
-		c.Status(400)
-		return
-	}
-
-	if parentsResult.Error != nil {
-		c.Status(400)
-		return
-	}
-
 	c.JSON(200, gin.H{
-		"user":    user,
-		"estms":   estms,
-		"parents": parents,
+		"user": user,
 	})
 
 }
