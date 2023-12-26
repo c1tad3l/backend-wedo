@@ -67,9 +67,9 @@ func CreateUser(c *gin.Context) {
 		Role:                  uservals.Role,
 		UserParents: []users.UserParents{
 			{Id: id,
-				Name:     uservals.FirstName,
-				LastName: uservals.FirstLastName,
-				Surname:  uservals.FirstSurname,
+				Name:     uservals.ParentFirstName,
+				LastName: uservals.ParentFirstLastName,
+				Surname:  uservals.ParentFirstSurname,
 			},
 		},
 		UserEstimates: []users.UserEstimates{{
