@@ -18,6 +18,13 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.POST("/reset-password", h.resetPassword)
 	}
 
+	entree := router.Group("/entree")
+	{
+		entree.GET("/", h.getAllEntree)
+		entree.PUT("/update-esmts/:id", h.updateEstmts)
+		entree.PUT("/update-parents/:id", h.updateParents)
+		entree.PUT("/update-passport/:id", h.updatePassport)
+	}
 	return router
 }
 
@@ -29,6 +36,13 @@ type Auth interface {
 	ResetPassword()
 }
 
+type Entree interface {
+	GetAllEntries()
+	UpdateEstms()
+	UpdateParentsInfo()
+	UpdatePassport()
+}
 type Handler struct {
 	Auth
+	Entree
 }

@@ -28,9 +28,6 @@ var UsersVals struct {
 	FirstName             string
 	FirstLastName         string
 	FirstSurname          string
-	SecondName            string
-	SecondLastName        string
-	SecondSurname         string
 }
 
 var LogingVals struct {
@@ -38,9 +35,9 @@ var LogingVals struct {
 	Password string
 }
 
-var UserPassword struct{
-	Email                 string    `json:"email"`
-	Password              string    `json:"password"`
+var UserPassword struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 const Charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
