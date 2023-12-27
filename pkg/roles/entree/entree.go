@@ -76,9 +76,13 @@ func UpdateParentsInfo(c *gin.Context) {
 		return
 	}
 	initializers.DB.Model(&perents).Updates(users.UserParents{
-		Name:     parent.ParentFirstName,
-		LastName: parent.ParentFirstLastName,
-		Surname:  parent.ParentFirstSurname,
+		Name:     parent.FirstName,
+		LastName: parent.FirstLastName,
+		Surname:  parent.FirstSurname,
+	})
+	c.JSON(http.StatusOK, gin.H{
+		"error":  false,
+		"result": "Данные успешно изменены",
 	})
 	c.JSON(200, gin.H{
 		"perent": perents,
@@ -112,6 +116,10 @@ func UpdatePassport(c *gin.Context) {
 		PassportSeries: pass.PassportSeries,
 		PassportNumber:   pass.PassportNumber,
 		PassportBy:    pass.PassportBy,
+	})
+	c.JSON(http.StatusOK, gin.H{
+		"error":  false,
+		"result": "Данные успешно изменены",
 	})
 	c.JSON(200, gin.H{
 		"user": userpass,

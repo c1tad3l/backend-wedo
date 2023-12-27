@@ -25,9 +25,9 @@ var UsersVals struct {
 	Role                  string
 	EstmtName             string
 	Grade                 string
-	ParentFirstName       string `json:"parentsName"`
-	ParentFirstLastName   string `json:"parentsLast_name"`
-	ParentFirstSurname    string `json:"surname"`
+	FirstName       string `json:"parentsName"`
+	FirstLastName   string `json:"parentsLast_name"`
+	FirstSurname    string `json:"surname"`
 }
 
 var LogingVals struct {
