@@ -20,13 +20,13 @@ import (
 	"gorm.io/gorm"
 )
 
+// создание нового пользователя
+
 func CreateUser(c *gin.Context) {
 	id := uuid.New()
 	randomString := GenerateRandomString(10)
 
-	///пароль отобразиться в консоли, так как результат будет уже захеширован (удалить когда он уже будет отправляться на почту)
-	fmt.Println(randomString)
-
+	// хэширование пароля
 	hash, err := bcrypt.GenerateFromPassword([]byte(randomString), 10)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -35,6 +35,7 @@ func CreateUser(c *gin.Context) {
 		})
 	}
 
+	// переменная для body(json)
 	uservals := reqBodyData.UsersVals
 	err = c.BindJSON(&uservals)
 	if err != nil {
@@ -44,6 +45,7 @@ func CreateUser(c *gin.Context) {
 		})
 		return
 	}
+
 
 	var userEstimates []users.UserEstimates
 
@@ -63,6 +65,22 @@ func CreateUser(c *gin.Context) {
 			Name:     parents.Name,
 			LastName: parents.LastName,
 			Surname:  parents.Surname,
+
+	/// проверка на то сущесвтует ли email в базе данных
+	var usr users.User
+	checkmail := initializers.DB.First(&usr, "email = ?", uservals.Email).Error
+	if !errors.Is(checkmail, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  true,
+			"resutl": "такой email ужe cуществует",
+		})
+		return
+	}
+
+	if errors.Is(checkmail, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusOK, gin.H{
+			"result": "новый пользователь создан",
+
 		})
 	}
 
@@ -89,12 +107,16 @@ func CreateUser(c *gin.Context) {
 		UserParents:           userParents,
 		UserEstimates:         userEstimates,
 	}
+
+	// создание пользователя в базе данных
 	userResult := initializers.DB.Create(&user)
 
 	if userResult.Error != nil {
 		c.Status(400)
 		return
 	}
+	///пароль отобразиться в консоли, так как результат будет уже захеширован (удалить когда он уже будет отправляться на почту)
+	fmt.Println(randomString)
 
 	c.JSON(200, gin.H{
 		"user": user,
@@ -102,7 +124,11 @@ func CreateUser(c *gin.Context) {
 
 }
 
+// авторизация пользователя
+
 func LoginUser(c *gin.Context) {
+
+	//переменная body(json)
 	loginVals := reqBodyData.LogingVals
 	err := c.Bind(&loginVals)
 	if err != nil {
@@ -112,8 +138,8 @@ func LoginUser(c *gin.Context) {
 		})
 		return
 	}
+	//проверка , есть ли такой email в базе данных
 	var user users.User
-
 	mailCheck := initializers.DB.First(&user, "email = ?", loginVals.Email).Error
 	if errors.Is(mailCheck, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -123,6 +149,7 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
+	// проверка на совпадение пароля
 	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginVals.Password))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -134,7 +161,8 @@ func LoginUser(c *gin.Context) {
 	//jwt token
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"sub": user.Id,
-		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(),
+
+		"exp": time.Now().Add(time.Hour * 24 * 30).Unix(), // 30 дней
 	})
 
 	tokenString, err := token.SignedString([]byte("we4r5678987654e3w3e456789876yt5rewr5t678765r"))
@@ -154,6 +182,8 @@ func LoginUser(c *gin.Context) {
 	})
 
 }
+
+// подтверждение email
 
 func VerificationMail(c *gin.Context) {
 
@@ -196,6 +226,8 @@ func VerificationMail(c *gin.Context) {
 	})
 	return
 }
+
+// сброс пароля
 
 func ResetPassword(c *gin.Context) {
 	var user users.User
