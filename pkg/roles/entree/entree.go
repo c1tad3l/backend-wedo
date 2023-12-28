@@ -25,7 +25,7 @@ func GetAllEntries(c *gin.Context) {
 
 func UpdateEstms(c *gin.Context) {
 	id := c.Param("id")
-	estms := reqBodyData.UsersVals
+	estms := reqBodyData.EstimatesUpdate
 	err := c.BindJSON(&estms)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -39,12 +39,12 @@ func UpdateEstms(c *gin.Context) {
 	if errors.Is(сheckEstmtsId, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error":  true,
-			"result": "такой пользователь не найден",
+			"result": "нет такой записи",
 		})
 		return
 	}
 	initializers.DB.Model(&estimates).Updates(users.UserEstimates{
-		Name:  estms.EstmtName,
+		Name:  estms.Name,
 		Grade: estms.Grade,
 	})
 
@@ -57,7 +57,7 @@ func UpdateEstms(c *gin.Context) {
 
 func UpdateParentsInfo(c *gin.Context) {
 	id := c.Param("id")
-	parent := reqBodyData.UsersVals
+	parent := reqBodyData.ParentsUpdate
 	err := c.Bind(&parent)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -76,9 +76,9 @@ func UpdateParentsInfo(c *gin.Context) {
 		return
 	}
 	initializers.DB.Model(&perents).Updates(users.UserParents{
-		Name:     parent.FirstName,
-		LastName: parent.FirstLastName,
-		Surname:  parent.FirstSurname,
+		Name:     parent.Name,
+		LastName: parent.LastName,
+		Surname:  parent.Surname,
 	})
 	c.JSON(http.StatusOK, gin.H{
 		"error":  false,
@@ -112,10 +112,10 @@ func UpdatePassport(c *gin.Context) {
 		return
 	}
 	initializers.DB.Model(&userpass).Updates(users.User{
-		PassportDate:  pass.PassportDate,
+		PassportDate:   pass.PassportDate,
 		PassportSeries: pass.PassportSeries,
-		PassportNumber:   pass.PassportNumber,
-		PassportBy:    pass.PassportBy,
+		PassportNumber: pass.PassportNumber,
+		PassportBy:     pass.PassportBy,
 	})
 	c.JSON(http.StatusOK, gin.H{
 		"error":  false,
