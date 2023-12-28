@@ -67,6 +67,7 @@ func CreateUser(c *gin.Context) {
 
 	if errors.Is(checkmail, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusOK, gin.H{
+			"error":  false,
 			"result": "новый пользователь создан",
 		})
 	}
