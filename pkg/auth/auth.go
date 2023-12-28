@@ -45,6 +45,44 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
+	var userEstimates []users.UserEstimates
+
+	for _, estimate := range uservals.Estimates {
+		userEstimates = append(userEstimates, users.UserEstimates{
+			Id:    uuid.New(),
+			Name:  estimate.Name,
+			Grade: estimate.Grade,
+		})
+	}
+	/// проверка на то сущесвтует ли email в базе данных
+	var usr users.User
+	checkmail := initializers.DB.First(&usr, "email = ?", uservals.Email).Error
+	if !errors.Is(checkmail, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  true,
+			"resutl": "такой email ужe cуществует",
+		})
+		return
+	}
+
+	if errors.Is(checkmail, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusOK, gin.H{
+			"error":  false,
+			"result": "новый пользователь создан",
+		})
+	}
+
+	var userParents []users.UserParents
+
+	for _, parents := range uservals.Parents {
+		userParents = append(userParents, users.UserParents{
+			Id:       uuid.New(),
+			Name:     parents.Name,
+			LastName: parents.LastName,
+			Surname:  parents.Surname,
+		})
+	}
+
 	user := users.User{
 		Id:                    id,
 		Name:                  uservals.Name,
@@ -64,18 +102,8 @@ func CreateUser(c *gin.Context) {
 		IsGeneralEducation:    uservals.IsGeneralEducation,
 		IsCitizenship:         uservals.IsCitizenship,
 		Role:                  uservals.Role,
-		UserParents: []users.UserParents{
-			{Id: id,
-				Name:     uservals.FirstName,
-				LastName: uservals.FirstLastName,
-				Surname:  uservals.FirstSurname,
-			},
-		},
-		UserEstimates: []users.UserEstimates{{
-			Id:    id,
-			Name:  uservals.EstmtName,
-			Grade: uservals.Grade,
-		}},
+		UserParents:           userParents,
+		UserEstimates:         userEstimates,
 	}
 	userResult := initializers.DB.Create(&user)
 
