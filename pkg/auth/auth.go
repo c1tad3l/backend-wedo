@@ -54,6 +54,22 @@ func CreateUser(c *gin.Context) {
 			Grade: estimate.Grade,
 		})
 	}
+	/// проверка на то сущесвтует ли email в базе данных
+	var usr users.User
+	checkmail := initializers.DB.First(&usr, "email = ?", uservals.Email).Error
+	if !errors.Is(checkmail, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  true,
+			"resutl": "такой email ужe cуществует",
+		})
+		return
+	}
+
+	if errors.Is(checkmail, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusOK, gin.H{
+			"result": "новый пользователь создан",
+		})
+	}
 
 	var userParents []users.UserParents
 
