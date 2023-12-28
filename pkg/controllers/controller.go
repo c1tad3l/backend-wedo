@@ -25,6 +25,11 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		entree.PUT("/update-parents/:id", h.updateParents)
 		entree.PUT("/update-passport/:id", h.updatePassport)
 	}
+	user := router.Group("/users")
+	{
+		user.GET("/:id", h.GetUser)
+	}
+
 	return router
 }
 
@@ -42,7 +47,12 @@ type Entree interface {
 	UpdateParentsInfo()
 	UpdatePassport()
 }
+type User interface {
+	GetUser()
+}
+
 type Handler struct {
 	Auth
 	Entree
+	User
 }
