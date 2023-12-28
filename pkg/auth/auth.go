@@ -61,7 +61,6 @@ func CreateUser(c *gin.Context) {
 		CertificateNumber:     uservals.CertificateNumber,
 		CertificateDate:       uservals.CertificateDate,
 		CertificateSchoolName: uservals.CertificateSchoolName,
-		AveragePoint:          uservals.AveragePoint,
 		IsGeneralEducation:    uservals.IsGeneralEducation,
 		IsCitizenship:         uservals.IsCitizenship,
 		Role:                  uservals.Role,
@@ -85,8 +84,38 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
+	to := []string{uservals.Email}
+	cc := []string{}
+	bcc := []string{}
+
+	subject := "Первичный пароль"
+	mailtype := "html"
+	replyToAddress := ""
+
+	body := `
+			<html>
+			<body>
+			<h1>
+				Приветствуем!
+			</h1><br>
+			<h3>
+				Ваш код для входа в аккаунт:
+			</h3>
+			<h2>` + randomString + ` </h2><br><br><h5>Пароль можно будет сменить после входа в аккаунт<br>На это сообщение не нужно отвечать.</h5> </body> </html>`
+
+	err = sender.SendToMail(subject, body, mailtype, replyToAddress, to, cc, bcc)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error":  true,
+			"result": "Произошла какая то непредвиденная ошибка",
+		})
+		return
+	}
+
 	c.JSON(200, gin.H{
-		"user": user,
+		"error": false,
+		"user":  user,
 	})
 
 }

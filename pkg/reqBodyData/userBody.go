@@ -23,8 +23,8 @@ var UsersVals struct {
 	IsGeneralEducation    bool
 	IsCitizenship         bool
 	Role                  string
-	EstmtName             string
-	Grade                 string
+	EstmtName             string `json:"estmtName"`
+	Grade                 string `json:"grade"`
 	FirstName             string
 	FirstLastName         string
 	FirstSurname          string

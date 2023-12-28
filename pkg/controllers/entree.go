@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"github.com/c1tad3l/backend-wedo/pkg/roles/entree"
+	"github.com/c1tad3l/backend-wedo/pkg/entree"
 	"github.com/gin-gonic/gin"
 )
 
