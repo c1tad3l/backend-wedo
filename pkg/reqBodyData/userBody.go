@@ -12,10 +12,10 @@ var UsersVals struct {
 	Phone                 string
 	Email                 string
 	EmailVerification     bool
-	PassportDate          string
-	PassportSeries        string
-	PassportNumber        string
-	PassportBy            string
+	PassportDate          string `json:"passport_date"`
+	PassportSeries        string `json:"passport_series"`
+	PassportNumber        string `json:"passport_number"`
+	PassportBy            string `json:"passport_by"`
 	CertificateNumber     string
 	CertificateDate       string
 	CertificateSchoolName string
@@ -25,9 +25,9 @@ var UsersVals struct {
 	Role                  string
 	EstmtName             string
 	Grade                 string
-	FirstName             string
-	FirstLastName         string
-	FirstSurname          string
+	FirstName       string `json:"parentsName"`
+	FirstLastName   string `json:"parentsLast_name"`
+	FirstSurname    string `json:"surname"`
 }
 
 var LogingVals struct {
