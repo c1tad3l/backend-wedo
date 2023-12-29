@@ -40,6 +40,7 @@ var ParentsUpdate struct {
 	Name     string `json:"parents_name"`
 	LastName string `json:"parentsLast_name"`
 	Surname  string `json:"parents_surname"`
+	Phone    string `json:"phone"`
 }
 
 var UserPassword struct {

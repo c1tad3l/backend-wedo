@@ -47,8 +47,8 @@ type  userParams={
     // secretary - секретарь
     // entree - абитуриент
     // student - студент
-    UserParents: UserParents[]
-    UserEstimates: UserEstimates[]
+    user_parents: UserParents[]
+    user_estimates: UserEstimates[]
 }
 ````
 <h3>GO model</h3>
@@ -107,6 +107,7 @@ type parentsParams={
     name :string
     last_name: string
     surname: string
+    phone: string
 }
 ````
 <h3>GO model</h3>
@@ -117,6 +118,7 @@ type UserParents struct {
 	Name     string    `json:"name"`
 	LastName string    `json:"last_name"`
 	Surname  string    `json:"surname"`
+	Phone string `json:"phone"`
 	UserId   uuid.UUID `gorm:"foreignKey:Id" json:"user_id"`
 }
 ````
