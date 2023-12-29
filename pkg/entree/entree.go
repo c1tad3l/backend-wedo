@@ -30,8 +30,8 @@ func GetAllEntries(c *gin.Context) {
 // UpdateEstms Обновление атестата
 func UpdateEstms(c *gin.Context) {
 	id := c.Param("id")
-	estms := reqBodyData.EstimatesUpdate
-	err := c.BindJSON(&estms)
+	estimates := reqBodyData.EstimatesUpdate
+	err := c.BindJSON(&estimates)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":  true,
@@ -39,8 +39,8 @@ func UpdateEstms(c *gin.Context) {
 		})
 		return
 	}
-	var estimates users.UserEstimates
-	сheckEstmtsId := initializers.DB.First(&estimates, "id = ? ", id).Error
+	var userEstimates users.UserEstimates
+	сheckEstmtsId := initializers.DB.First(&userEstimates, "id = ? ", id).Error
 	if errors.Is(сheckEstmtsId, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error":  true,
@@ -48,14 +48,14 @@ func UpdateEstms(c *gin.Context) {
 		})
 		return
 	}
-	initializers.DB.Model(&estimates).Updates(users.UserEstimates{
-		Name:  estms.Name,
-		Grade: estms.Grade,
+	initializers.DB.Model(&userEstimates).Updates(users.UserEstimates{
+		Name:  estimates.Name,
+		Grade: estimates.Grade,
 	})
 
 	c.JSON(200, gin.H{
-		"error": false,
-		"estms": estimates,
+		"error":     false,
+		"estimates": userEstimates,
 	})
 }
 
@@ -115,10 +115,11 @@ func UpdatePassport(c *gin.Context) {
 		return
 	}
 	initializers.DB.Model(&userpass).Updates(users.User{
-		PassportDate:   pass.PassportDate,
-		PassportSeries: pass.PassportSeries,
-		PassportNumber: pass.PassportNumber,
-		PassportBy:     pass.PassportBy,
+		PassportDate:    pass.PassportDate,
+		PassportSeries:  pass.PassportSeries,
+		PassportNumber:  pass.PassportNumber,
+		PassportBy:      pass.PassportBy,
+		PassportAddress: pass.PassportAddress,
 	})
 	c.JSON(http.StatusOK, gin.H{
 		"error":  false,
