@@ -2,7 +2,6 @@ package auth
 
 import (
 	"errors"
-	"fmt"
 	"math/rand"
 	"net/http"
 	"regexp"
@@ -20,12 +19,13 @@ import (
 	"gorm.io/gorm"
 )
 
+// CreateUser Создания пользователя
 func CreateUser(c *gin.Context) {
 	id := uuid.New()
 	randomString := GenerateRandomString(10)
 
 	///пароль отобразиться в консоли, так как результат будет уже захеширован (удалить когда он уже будет отправляться на почту)
-	fmt.Println(randomString)
+	//fmt.Println(randomString)
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(randomString), 10)
 	if err != nil {
@@ -63,13 +63,6 @@ func CreateUser(c *gin.Context) {
 			"resutl": "такой email ужe cуществует",
 		})
 		return
-	}
-
-	if errors.Is(checkmail, gorm.ErrRecordNotFound) {
-		c.JSON(http.StatusOK, gin.H{
-			"error":  false,
-			"result": "новый пользователь создан",
-		})
 	}
 
 	var userParents []users.UserParents
@@ -146,8 +139,12 @@ func CreateUser(c *gin.Context) {
 		"user":  user,
 	})
 
+	//c.JSON(http.StatusOK, gin.H{
+	//	"error":  false,
+	//	"result": "новый пользователь создан"})
 }
 
+// LoginUser Авторизация пользователя
 func LoginUser(c *gin.Context) {
 	loginVals := reqBodyData.LogingVals
 	err := c.Bind(&loginVals)
@@ -201,6 +198,7 @@ func LoginUser(c *gin.Context) {
 
 }
 
+// VerificationMail Подтверждение почты
 func VerificationMail(c *gin.Context) {
 
 	data := users.Verification
@@ -243,6 +241,7 @@ func VerificationMail(c *gin.Context) {
 	return
 }
 
+// ResetPassword Сброс пароля
 func ResetPassword(c *gin.Context) {
 	var user users.User
 	data := reqBodyData.UserPassword
@@ -292,8 +291,7 @@ func ResetPassword(c *gin.Context) {
 	})
 }
 
-// Функция для отправки кода на почту
-
+// SendEmailCode Функция для отправки кода на почту
 func SendEmailCode(c *gin.Context) {
 
 	email := &users.EmailType
@@ -358,7 +356,7 @@ func SendEmailCode(c *gin.Context) {
 
 }
 
-// Функции который используется в качестве вспомогательных и обработчики
+// Функции который используется в качестве вспомогательных или обработчиков
 
 func deleteCodeAfterTime(code string, email string) {
 	time.Sleep(30 * time.Minute)
