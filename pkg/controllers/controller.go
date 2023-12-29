@@ -28,7 +28,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	user := router.Group("/users")
 	{
 		user.GET("/:id", h.GetUser)
-		user.GET("/all-by/:id", h.GetUserByRole)
+		user.GET("/all-by/:role", h.GetUserByRole)
 	}
 
 	return router

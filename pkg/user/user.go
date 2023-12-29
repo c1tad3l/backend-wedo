@@ -13,7 +13,7 @@ import (
 // GetUsersByRole получение пользователей по ролям
 
 func GetUsersByRole(c *gin.Context) {
-	role := c.Param("id")
+	role := c.Param("role")
 
 	var usersRoleList []users.User
 

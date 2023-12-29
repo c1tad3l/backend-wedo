@@ -557,3 +557,31 @@ type response = {
     "user":   userpass,
 }
 ```
+
+<h1>GET</h1>
+
+<h2>users/all-by/:role</h2>
+
+<p>Получение пользователей по роле</p>
+
+
+<h2>Варианты ответов:</h2>
+
+
+<h3>200</h3>
+
+```typescript
+type response = {
+    "error": false,
+    "users": usersRoleList,
+}
+```
+<h3>404</h3>
+<h4>пользователей с такой ролью не существует</h4>
+
+```typescript
+type response = {
+    "error":  true,
+    "result": "пользователей с такой ролью не существует",
+}
+```
