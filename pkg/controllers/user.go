@@ -9,3 +9,8 @@ func (h *Handler) GetUser(c *gin.Context) {
 	user.GetUser(c)
 
 }
+
+func (h *Handler) GetUserByRole(c *gin.Context) {
+	user.GetUsersByRole(c)
+
+}

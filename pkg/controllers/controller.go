@@ -28,6 +28,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	user := router.Group("/users")
 	{
 		user.GET("/:id", h.GetUser)
+		user.GET("/all-by/:id", h.GetUserByRole)
 	}
 
 	return router
@@ -49,6 +50,7 @@ type Entree interface {
 }
 type User interface {
 	GetUser()
+	GetUserByRole()
 }
 
 type Handler struct {
