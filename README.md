@@ -148,6 +148,7 @@ type params={
 ```
 
 <h3>GO model</h3>
+
 ```
 var UserPassword struct{
 	Email                 string    `json:"email"`
@@ -292,6 +293,7 @@ type params = {
     code: string
 }
 ```
+
 <h3>GO model</h3>
 
 ```
@@ -437,6 +439,7 @@ type params={
 
 
 <h3>200</h3>
+
 ```typescript
 type response = {
     "error": false,
@@ -445,6 +448,7 @@ type response = {
 ```
 <h3>404</h3>
 <h4>Запись не найдена</h4>
+
 ```typescript
 type response = {
     "error":  true,
@@ -453,6 +457,7 @@ type response = {
 ```
 <h3>400</h3>
 <h4>Один или несколько ключей не прошли валидацию</h4>
+
 ```typescript
 type response = {
 	"error":  true,
@@ -486,6 +491,7 @@ type response = {
     "parents": parents,
 }
 ```
+
 <h3>404</h3>
 <h4>Запись не найдена</h4>
 
@@ -495,6 +501,7 @@ type response = {
     "result": "такой пользователь не найден",
 }
 ```
+
 <h3>400</h3>
 <h4>Один или несколько ключей не прошли валидацию</h4>
 
