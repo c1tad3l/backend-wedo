@@ -3,6 +3,7 @@ package entree
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/c1tad3l/backend-wedo/initializers"
 	"github.com/c1tad3l/backend-wedo/pkg/models/users"
@@ -11,18 +12,21 @@ import (
 	"gorm.io/gorm"
 )
 
-// получение всех абитуриентов
-
+// GetAllEntries получение всех абитуриентов
 func GetAllEntries(c *gin.Context) {
 	var user []users.User
 	initializers.DB.Preload("UserParents").Preload("UserEstimates").Find(&user)
+
+	for i := 0; i < len(user); i++ {
+		user[i].AveragePoint = calcAveragePoints(user[i].UserEstimates)
+	}
+
 	c.JSON(200, gin.H{
 		"user": user,
 	})
 }
 
-// обновление атестата
-
+// UpdateEstms Обновление атестата
 func UpdateEstms(c *gin.Context) {
 	id := c.Param("id")
 	estms := reqBodyData.EstimatesUpdate
@@ -53,8 +57,7 @@ func UpdateEstms(c *gin.Context) {
 	})
 }
 
-// обновление данных о родителях
-
+// UpdateParentsInfo обновление данных о родителях
 func UpdateParentsInfo(c *gin.Context) {
 	id := c.Param("id")
 	parent := reqBodyData.ParentsUpdate
@@ -89,8 +92,7 @@ func UpdateParentsInfo(c *gin.Context) {
 	})
 }
 
-// обновление паспортных данных
-
+// UpdatePassport обновление паспортных данных
 func UpdatePassport(c *gin.Context) {
 	id := c.Param("id")
 	pass := reqBodyData.UsersVals
@@ -124,4 +126,20 @@ func UpdatePassport(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"user": userpass,
 	})
+}
+
+// вычисление среднего балла
+func calcAveragePoints(userEstimates []users.UserEstimates) float64 {
+
+	if len(userEstimates) != 0 {
+		result := float64(0)
+		for i := 0; i < len(userEstimates); i++ {
+			grade, _ := strconv.ParseFloat(userEstimates[i].Grade, 64)
+			result = result + grade
+		}
+
+		return result / float64(len(userEstimates))
+	} else {
+		return 0
+	}
 }

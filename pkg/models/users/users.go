@@ -23,7 +23,7 @@ type User struct {
 	IsGeneralEducation    bool            `json:"is_general_education"`
 	IsCitizenship         bool            `json:"is_citizenship"`
 	Role                  string          `json:"role"`
-	AveragePoint          string          `json:"average_point,omitempty"`
+	AveragePoint          float64         `json:"average_point,omitempty"`
 	UserParents           []UserParents   `gorm:"many2many:user_user_parents;" json:"user_parents,omitempty"`
 	UserEstimates         []UserEstimates `gorm:"many2many:user_user_estimates;" json:"user_estimates,omitempty"`
 }
