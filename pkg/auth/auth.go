@@ -192,8 +192,9 @@ func LoginUser(c *gin.Context) {
 	//поменять secure parameter в будущем
 	c.SetCookie("Authorization", tokenString, 3600*24*30, "", "", false, true)
 	c.JSON(http.StatusOK, gin.H{
-		"error": false,
-		"token": tokenString,
+		"error":  false,
+		"token":  tokenString,
+		"userId": user.Id,
 	})
 
 }
@@ -272,11 +273,12 @@ func ResetPassword(c *gin.Context) {
 			"result": "error",
 		})
 	}
+
 	checkEmail := checkingEmailInBD(data.Email)
 	if !checkEmail {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error":  true,
-			"result": "Не правильно введен email",
+			"result": "Email не совпал с почтой из базы",
 		})
 		return
 	}
@@ -285,9 +287,6 @@ func ResetPassword(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"error":  false,
 		"result": "Пароль успешно изменён",
-	})
-	c.JSON(200, gin.H{
-		"user": user,
 	})
 }
 

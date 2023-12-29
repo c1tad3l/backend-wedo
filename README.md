@@ -7,10 +7,10 @@ github.com/gin-gonic/gin<br>
 
 https://gorm.io/index.html
 github.com/spf13/viper
-<h1>чтобы запустить сервер<h1> 
+<h1>чтобы запустить сервер</h1> 
 <h2 style="background: white; color: black; padding:1rem">
 go run cmd/main.go
-<h2>
+</h2>
 
 <h1>Чтобы выполнить миграцию</h1>
 <h2 style="background: white; color: black; padding:1rem">
@@ -44,31 +44,41 @@ type  userParams={
 	is_general_education: boolean
 	is_citizenship: boolean
 	role: string
+    // secretary - секретарь
+    // entree - абитуриент
+    // student - студент
+    UserParents: UserParents[]
+    UserEstimates: UserEstimates[]
 }
 ````
 <h3>GO model</h3>
 
 ```
 type User struct {
-	Id                    uuid.UUID `gorm:"PrimaryKey" json:"id"`
-	Name                  string    `json:"name"`
-	Password              string    `json:"password"`
-	LastName              string    `json:"last_name"`
-	Surname               string    `json:"surname"`
-	Phone                 string    `json:"phone"`
-	Email                 string    `json:"email"`
-	EmailVerification     bool      `json:"email_verification"`
-	PassportDate          string    `json:"passport_date"`
-	PassportSeries        string    `json:"passport_series"`
-	PassportNumber        string    `json:"passport_number"`
-	PassportBy            string    `json:"passport_by"`
-	CertificateNumber     string    `json:"certificate_number"`
-	CertificateDate       string    `json:"certificate_date"`
-	CertificateSchoolName string    `json:"certificate_school_name"`
-	AveragePoint          float64   `json:"average_point"`
-	IsGeneralEducation    bool      `json:"is_general_education"`
-	IsCitizenship         bool      `json:"is_citizenship"`
-	Role                  string    `json:"role"`
+	Id                    uuid.UUID       `gorm:"PrimaryKey" json:"id"`
+	Name                  string          `json:"name"`
+	Password              string          `json:"password"`
+	LastName              string          `json:"last_name"`
+	Surname               string          `json:"surname"`
+	Phone                 string          `json:"phone"`
+	Email                 string          `json:"email"`
+	EmailVerification     bool            `json:"email_verification"`
+	PassportDate          string          `json:"passport_date"`
+	PassportSeries        string          `json:"passport_series"`
+	PassportNumber        string          `json:"passport_number"`
+	PassportBy            string          `json:"passport_by"`
+	CertificateNumber     string          `json:"certificate_number"`
+	CertificateDate       string          `json:"certificate_date"`
+	CertificateSchoolName string          `json:"certificate_school_name"`
+	IsGeneralEducation    bool            `json:"is_general_education"`
+	IsCitizenship         bool            `json:"is_citizenship"`
+	Role                  string          `json:"role"` 
+	// secretary - секретарь
+	// entree - абитуриент
+	// student - студент
+	AveragePoint          float64         `json:"average_point,omitempty"`
+	UserParents           []UserParents   `gorm:"many2many:user_user_parents;" json:"user_parents,omitempty"`
+	UserEstimates         []UserEstimates `gorm:"many2many:user_user_estimates;" json:"user_estimates,omitempty"`
 }
 ````
 <h3>Typescipt request</h3>
@@ -116,7 +126,7 @@ type UserParents struct {
 <h3>200</h3>
 
 ```typescript
-response = {
+type response = {
     error: false,
     token: tokenString,
 }
@@ -150,9 +160,10 @@ var UserPassword struct{
 <h3>200</h3>
 
 ```typescript
-response = {
+type response = {
     error: false,
     token: tokenString,
+    userId: userId
 }
 ```
 
@@ -160,7 +171,7 @@ response = {
 <h4>Пароль не совпал с паролем в базе данных</h2>
 
 ```typescript
-response = {
+type response = {
     error: true,
     result: "Не правильно введен Пароль",
 }
@@ -170,7 +181,7 @@ response = {
 <h4>Поле email или поле password оказались пустыми</h2>
 
 ```typescript
-response = {
+type response = {
     error:  true,
     result: "Не введен email или пароль",
 }
@@ -180,7 +191,7 @@ response = {
 <h4>Не удалось найти email в базе данных</h2>
 
 ```typescript
-response = {
+type response = {
     error: true,
     result: "Не правильно введен email",
 }
@@ -190,7 +201,7 @@ response = {
 <h4>По каким то причинам сервер не смог сгенирировать токен защиты</h2>
 
 ```typescript
-response = {
+type response = {
     "error": true,
     "result": "не получилось создать токен",
 }
@@ -199,7 +210,74 @@ response = {
 <h1>POST</h1>
 <h2 style="background: white; color: black; padding:1rem">/auth/reset-password</h2>
 
+<h3>Typescript request</h3>
 
+```typescript
+type params = {
+    email:string
+    password: string
+}
+```
+<h3>GO model</h3>
+
+```
+var UserPassword struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+```
+
+<h2>Варианты ответов:</h2>
+
+<h3>200</h3>
+
+```typescript
+type response = {
+    "error":  false,
+    "result": "Пароль успешно изменён",
+}
+```
+
+<h3>400</h3>
+<h4>Email не совпал с почтой из базы данных</h4>
+
+```typescript
+type response = {
+    "error":  true,
+    "result": "Email не совпал с почтой из базы",
+}
+```
+
+<h3>400</h3>
+<h4>Пароль не совпал с паролем из базы данных</h4>
+
+```typescript
+type response = {
+    "error":  true,
+    "result": "error",
+}
+```
+
+
+<h3>400</h3>
+<h4>Email не прошел валидацию</h4>
+
+```typescript
+type response = {
+    "error":  true,
+    "result": "Неверно указана почта",
+}
+```
+
+<h3>400</h3>
+<h4>Поле email оказалось пустым</h4>
+
+```typescript
+type response = {
+    "error":  true,
+    "result": "Укажите email пользователя",
+}
+```
 
 <h1>POST</h1>
 <h2 style="background: white; color: black; padding:1rem">/auth/verification</h2>
@@ -228,7 +306,7 @@ var Verification struct {
 <h3>200</h3>
 
 ```typescript
-response = {
+type response = {
     error:  false,
     result: true,
 }
@@ -239,7 +317,7 @@ response = {
 <h4>Email не был отправлен вообще, или же оказалось пустым</h2>
 
 ```typescript
-response = {
+type response = {
     error:  true,
     result: "Укажите email пользователя",
 }
@@ -249,7 +327,7 @@ response = {
 <h4>Почта не прошла валидацию</h2>
 
 ```typescript
-response = {
+type response = {
     error:  true,
     result: "Неверно указана почта",
 }
@@ -258,7 +336,7 @@ response = {
 <h4>Почта или код не существует в базе данных ( можно доработать и сделать проверку чего конкретно нет )</h2>
 
 ```typescript
-response = {
+type response = {
     error:  true,
     result: "Не правильно введен email или проверочный код",
 }
@@ -289,7 +367,7 @@ Email string `json:"email"`
 <h3>200</h3>
 
 ```typescript
-response = {
+type response = {
 error: false
 }
 ```
@@ -298,7 +376,7 @@ error: false
 <h4>Email не был отправлен вообще, или же оказалось пустым</h2>
 
 ```typescript
-response = {
+type response = {
     error:  true,
     result: "Укажите email пользователя",
 }
@@ -308,29 +386,45 @@ response = {
 <h4>Почта не прошла валидацию</h2>
 
 ```typescript
-response = {
+type response = {
     error:  true,
     result: "Неверно указана почта",
 }
 ```
 
 <h3 id="test">500</h3>
-<h4>По какой то причине произошла ошибки при отправке, тяжело сделать обработчик возможно поможет отправить снова, в будущем может что то придумаем если такое случится.D</h2>
+<h4>По какой то причине произошла ошибки при отправке, тяжело сделать обработчик возможно поможет отправить снова, в будущем может что то придумаем если такое случится</h2>
 
 ```typescript
-response = {
+type response = {
     error:  true,
     result: "Произошла какая то непредвиденная ошибка",
 }
 ```
-<h1>Запросы для абитуриентов<h1>
+<h1>Запросы для абитуриентов</h1>
+
 <h1>Get</h1>
+
 <h2>/entree/</h2>
-<p>все данные об абитуриенте</p>
+
+<p>Вытягивание всех абитуриентов</p>
+
+<h2>Варианты ответов:</h2>
+
+<h3>200</h3>
+
+```typescript
+type response = {
+    "error": false,
+    "user": user,
+}
+```
 
 <h1>PUT</h1>
+
 <h2>entree/update-esmts/:id</h2>
-<p>обновление данных об аттестате </p>
+
+<p>Обновление данных об аттестате </p>
 
 ```typescript
 type params={ 
@@ -338,3 +432,121 @@ type params={
     grade:string
 }
 ````
+
+<h2>Варианты ответов:</h2>
+
+
+<h3>200</h3>
+```typescript
+type response = {
+    "error": false,
+    "estms": estimates,
+}
+```
+<h3>404</h3>
+<h4>Запись не найдена</h4>
+```typescript
+type response = {
+    "error":  true,
+    "result": "Нет такой записи",
+}
+```
+<h3>400</h3>
+<h4>Один или несколько ключей не прошли валидацию</h4>
+```typescript
+type response = {
+	"error":  true,
+	"result": err,
+}
+```
+
+<h1>PUT</h1>
+
+<h2>entree/update-parents/:id</h2>
+
+<p>Обновление данных о родителях </p>
+
+```typescript
+type params={
+    parents_name:     string,
+    parentsLast_name: string,
+    parents_surname:  string,
+}
+````
+
+<h2>Варианты ответов:</h2>
+
+
+<h3>200</h3>
+
+```typescript
+type response = {
+    "error":   false,
+    "result":  "Данные успешно изменены",
+    "parents": parents,
+}
+```
+<h3>404</h3>
+<h4>Запись не найдена</h4>
+
+```typescript
+type response = {
+    "error":  true,
+    "result": "такой пользователь не найден",
+}
+```
+<h3>400</h3>
+<h4>Один или несколько ключей не прошли валидацию</h4>
+
+```typescript
+type response = {
+	"error":  true,
+	"result": err,
+}
+```
+
+<h1>PUT</h1>
+
+<h2>entree/update-passport/:id</h2>
+
+<p>Обновление данных о родителях </p>
+
+```typescript
+type params={
+    parents_name:     string,
+    parentsLast_name: string,
+    parents_surname:  string,
+}
+````
+
+<h2>Варианты ответов:</h2>
+
+
+<h3>200</h3>
+
+```typescript
+type response = {
+    "error":   false,
+    "result":  "Данные успешно изменены",
+    "parents": parents,
+}
+```
+<h3>404</h3>
+<h4>Запись не найдена</h4>
+
+```typescript
+type response = {
+    "error":  true,
+    "result": "такой пользователь не найден",
+}
+```
+<h3>400</h3>
+<h4>Один или несколько ключей не прошли валидацию</h4>
+
+```typescript
+type response = {
+    "error":  false,
+    "result": "Данные успешно изменены",
+    "user":   userpass,
+}
+```

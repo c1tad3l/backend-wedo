@@ -22,7 +22,8 @@ func GetAllEntries(c *gin.Context) {
 	}
 
 	c.JSON(200, gin.H{
-		"user": user,
+		"error": false,
+		"user":  user,
 	})
 }
 
@@ -43,7 +44,7 @@ func UpdateEstms(c *gin.Context) {
 	if errors.Is(сheckEstmtsId, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error":  true,
-			"result": "нет такой записи",
+			"result": "Нет такой записи",
 		})
 		return
 	}
@@ -53,6 +54,7 @@ func UpdateEstms(c *gin.Context) {
 	})
 
 	c.JSON(200, gin.H{
+		"error": false,
 		"estms": estimates,
 	})
 }
@@ -69,8 +71,8 @@ func UpdateParentsInfo(c *gin.Context) {
 		})
 		return
 	}
-	var perents users.UserParents
-	сheckParentsId := initializers.DB.First(&perents, "id = ? ", id).Error
+	var parents users.UserParents
+	сheckParentsId := initializers.DB.First(&parents, "id = ? ", id).Error
 	if errors.Is(сheckParentsId, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error":  true,
@@ -78,17 +80,15 @@ func UpdateParentsInfo(c *gin.Context) {
 		})
 		return
 	}
-	initializers.DB.Model(&perents).Updates(users.UserParents{
+	initializers.DB.Model(&parents).Updates(users.UserParents{
 		Name:     parent.Name,
 		LastName: parent.LastName,
 		Surname:  parent.Surname,
 	})
 	c.JSON(http.StatusOK, gin.H{
-		"error":  false,
-		"result": "Данные успешно изменены",
-	})
-	c.JSON(200, gin.H{
-		"perent": perents,
+		"error":   false,
+		"result":  "Данные успешно изменены",
+		"parents": parents,
 	})
 }
 
@@ -122,9 +122,7 @@ func UpdatePassport(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"error":  false,
 		"result": "Данные успешно изменены",
-	})
-	c.JSON(200, gin.H{
-		"user": userpass,
+		"user":   userpass,
 	})
 }
 
