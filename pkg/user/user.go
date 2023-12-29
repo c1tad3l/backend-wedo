@@ -10,6 +10,28 @@ import (
 	"strconv"
 )
 
+// GetUsersByRole получение пользователей по ролям
+
+func GetUsersByRole(c *gin.Context) {
+	role := c.Param("id")
+
+	var usersRoleList []users.User
+
+	roleCheck := initializers.DB.Preload("UserParents").Preload("UserEstimates").Find(&usersRoleList, "role = ?", role)
+
+	if errors.Is(roleCheck.Error, gorm.ErrRecordNotFound) {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error":  true,
+			"result": "пользователей с такой ролью не существует",
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"error": false,
+		"users": usersRoleList,
+	})
+
+}
+
 // GetUser Получение любого пользователя
 func GetUser(c *gin.Context) {
 

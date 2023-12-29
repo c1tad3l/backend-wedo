@@ -54,6 +54,18 @@ func CreateUser(c *gin.Context) {
 			Grade: estimate.Grade,
 		})
 	}
+
+	var userParents []users.UserParents
+
+	for _, parents := range uservals.Parents {
+		userParents = append(userParents, users.UserParents{
+			Id:       uuid.New(),
+			Name:     parents.Name,
+			LastName: parents.LastName,
+			Surname:  parents.Surname,
+		})
+	}
+
 	/// проверка на то сущесвтует ли email в базе данных
 	var usr users.User
 	checkmail := initializers.DB.First(&usr, "email = ?", uservals.Email).Error
@@ -65,15 +77,12 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	var userParents []users.UserParents
-
-	for _, parents := range uservals.Parents {
-		userParents = append(userParents, users.UserParents{
-			Id:       uuid.New(),
-			Name:     parents.Name,
-			LastName: parents.LastName,
-			Surname:  parents.Surname,
+	if uservals.Role == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":  true,
+			"result": "пожалуйста присвойте роль пользователю",
 		})
+		return
 	}
 
 	user := users.User{
