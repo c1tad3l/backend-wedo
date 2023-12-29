@@ -35,15 +35,15 @@ func GetUsersByRole(c *gin.Context) {
 // GetUser Получение любого пользователя
 func GetUser(c *gin.Context) {
 
-	_, err := c.Cookie("Authorization")
-
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{
-			"error":  true,
-			"result": "Пользователь не авторизован",
-		})
-		return
-	}
+	//_, err := c.Cookie("Authorization")
+	//
+	//if err != nil {
+	//	c.JSON(http.StatusUnauthorized, gin.H{
+	//		"error":  true,
+	//		"result": "Пользователь не авторизован",
+	//	})
+	//	return
+	//}
 
 	id := c.Param("id")
 
