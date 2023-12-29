@@ -63,6 +63,7 @@ func CreateUser(c *gin.Context) {
 			Name:     parents.Name,
 			LastName: parents.LastName,
 			Surname:  parents.Surname,
+			Phone:    parents.Phone,
 		})
 	}
 

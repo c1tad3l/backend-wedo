@@ -84,6 +84,7 @@ func UpdateParentsInfo(c *gin.Context) {
 		Name:     parent.Name,
 		LastName: parent.LastName,
 		Surname:  parent.Surname,
+		Phone:    parent.Phone,
 	})
 	c.JSON(http.StatusOK, gin.H{
 		"error":   false,

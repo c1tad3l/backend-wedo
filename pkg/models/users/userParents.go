@@ -7,4 +7,5 @@ type UserParents struct {
 	Name     string    `json:"parents_name"`
 	LastName string    `json:"parents_last_name"`
 	Surname  string    `json:"surname"`
+	Phone    string    `json:"phone"`
 }
