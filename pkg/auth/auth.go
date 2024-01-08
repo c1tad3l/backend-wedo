@@ -69,11 +69,11 @@ func CreateUser(c *gin.Context) {
 
 	/// проверка на то сущесвтует ли email в базе данных
 	var usr users.User
-	checkmail := initializers.DB.First(&usr, "email = ?", uservals.Email).Error
-	if !errors.Is(checkmail, gorm.ErrRecordNotFound) {
+	checkMail := initializers.DB.First(&usr, "email = ?", uservals.Email).Error
+	if !errors.Is(checkMail, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":  true,
-			"resutl": "такой email ужe cуществует",
+			"result": "такой email ужe существует",
 		})
 		return
 	}
