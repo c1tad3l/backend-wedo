@@ -10,6 +10,8 @@ var UsersVals struct {
 	Name                  string `json:"name"`
 	LastName              string `json:"last_name"`
 	Surname               string `json:"surname"`
+	Genre                 string `json:"genre"`
+	Birthday              string `json:"birthday"`
 	Phone                 string `json:"phone"`
 	Email                 string `json:"email"`
 	EmailVerification     bool   `json:"email_verification"`
@@ -17,8 +19,10 @@ var UsersVals struct {
 	PassportSeries        string `json:"passport_series"`
 	PassportNumber        string `json:"passport_number"`
 	PassportBy            string `json:"passport_by"`
+	PassportAddress       string `json:"passport_address"`
 	CertificateNumber     string `json:"certificate_number"`
 	CertificateDate       string `json:"certificate_date"`
+	CertificateBy         string `json:"certificate_by"`
 	CertificateSchoolName string `json:"certificate_school_name"`
 	AveragePoint          float64
 	IsGeneralEducation    bool                  `json:"is_general_education"`
@@ -33,13 +37,13 @@ var LogingVals struct {
 	Password string
 }
 var EstimatesUpdate struct {
-	Name  string `json:"estmt_name"`
+	Name  string `json:"estimates_name"`
 	Grade string `json:"grade"`
 }
 var ParentsUpdate struct {
-	Name     string `json:"parents_name"`
-	LastName string `json:"parentsLast_name"`
-	Surname  string `json:"parents_surname"`
+	Name     string `json:"name"`
+	LastName string `json:"last_name"`
+	Surname  string `json:"surname"`
 	Phone    string `json:"phone"`
 }
 

@@ -4,8 +4,8 @@ import "github.com/google/uuid"
 
 type UserParents struct {
 	Id       uuid.UUID `gorm:"PrimaryKey;" json:"id"`
-	Name     string    `json:"parents_name"`
-	LastName string    `json:"parents_last_name"`
+	Name     string    `json:"name"`
+	LastName string    `json:"last_name"`
 	Surname  string    `json:"surname"`
 	Phone    string    `json:"phone"`
 }

@@ -69,11 +69,11 @@ func CreateUser(c *gin.Context) {
 
 	/// проверка на то сущесвтует ли email в базе данных
 	var usr users.User
-	checkmail := initializers.DB.First(&usr, "email = ?", uservals.Email).Error
-	if !errors.Is(checkmail, gorm.ErrRecordNotFound) {
+	checkMail := initializers.DB.First(&usr, "email = ?", uservals.Email).Error
+	if !errors.Is(checkMail, gorm.ErrRecordNotFound) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error":  true,
-			"resutl": "такой email ужe cуществует",
+			"result": "такой email ужe существует",
 		})
 		return
 	}
@@ -92,6 +92,8 @@ func CreateUser(c *gin.Context) {
 		LastName:              uservals.LastName,
 		Surname:               uservals.Surname,
 		Password:              string(hash),
+		Genre:                 uservals.Genre,
+		Birthday:              uservals.Birthday,
 		Phone:                 uservals.Phone,
 		Email:                 uservals.Email,
 		EmailVerification:     uservals.EmailVerification,
@@ -99,9 +101,11 @@ func CreateUser(c *gin.Context) {
 		PassportSeries:        uservals.PassportSeries,
 		PassportNumber:        uservals.PassportNumber,
 		PassportBy:            uservals.PassportBy,
+		PassportAddress:       uservals.PassportAddress,
 		CertificateNumber:     uservals.CertificateNumber,
 		CertificateDate:       uservals.CertificateDate,
 		CertificateSchoolName: uservals.CertificateSchoolName,
+		CertificateBy:         uservals.CertificateBy,
 		IsGeneralEducation:    uservals.IsGeneralEducation,
 		IsCitizenship:         uservals.IsCitizenship,
 		Role:                  uservals.Role,

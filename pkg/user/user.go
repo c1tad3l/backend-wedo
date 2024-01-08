@@ -25,11 +25,14 @@ func GetUsersByRole(c *gin.Context) {
 			"result": "пользователей с такой ролью не существует",
 		})
 	}
+
+	for i := 0; i < len(usersRoleList); i++ {
+		usersRoleList[i].AveragePoint = calcAveragePoints(usersRoleList[i].UserEstimates)
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"error": false,
 		"users": usersRoleList,
 	})
-
 }
 
 // GetUser Получение любого пользователя
